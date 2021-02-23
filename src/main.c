@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     SDL_Renderer *rdr = SDL_CreateRenderer(wdw, -1,
                                            SDL_RENDERER_ACCELERATED);
     SDL_Texture *txr = tt_texture_load(rdr);
-    tt_room *room = tt_room_load(1);
+    tt_room *room = tt_room_load('0');
 
     SDL_SetRenderDrawColor(rdr, 215, 174, 0, 255);
 

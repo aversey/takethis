@@ -15,7 +15,7 @@ const SDL_Rect tt_texture_player    = { 0,      0,  0,  0 };
 
 SDL_Texture *tt_texture_load(SDL_Renderer *rdr)
 {
-    SDL_Surface *surf = SDL_LoadBMP("data/textures.bmp");
+    SDL_Surface *surf = SDL_LoadBMP("data/tiles.bmp");
     SDL_Texture *res = SDL_CreateTextureFromSurface(rdr, surf);
     SDL_FreeSurface(surf);
     return res;

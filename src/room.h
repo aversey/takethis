@@ -5,13 +5,17 @@
 #include <SDL2/SDL.h>
 
 
+#define TT_ROOM_W 19
+#define TT_ROOM_H 15
+
 typedef struct tt_room {
-    const SDL_Rect *tiles[15][19];
-    void *bodies[15][19];
+    char tiletypes[TT_ROOM_H][TT_ROOM_W];
+    const SDL_Rect *tiles[TT_ROOM_H][TT_ROOM_W];
+    void *bodies[TT_ROOM_H][TT_ROOM_W];
 } tt_room;
 
 
-tt_room *tt_room_load(int num);
+tt_room *tt_room_load(char c);
 
 void tt_room_draw(SDL_Renderer *rdr, SDL_Texture *txr, tt_room *room);
 
