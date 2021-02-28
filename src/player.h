@@ -1,20 +1,29 @@
-#ifndef TAKETHIS_INCLUDED_ROOM
-#define TAKETHIS_INCLUDED_ROOM
+#ifndef TAKETHIS_INCLUDED_PLAYER
+#define TAKETHIS_INCLUDED_PLAYER
 
 
-typedef struct tt_room {
-    SDL_Rect *tiles[15][19];
-    tt_body *bodies[15][19];
-} tt_room;
+#include "room.h"
 
 
-tt_room *tt_room_load(int num);
+typedef struct tt_player {
+    tt_room *room;
+    int xwalk;
+    int ywalk;
+    int x;
+    int y;
+    int xrem;
+    int yrem;
+    int variant;
+    int rem;
+    int money;
+    int keys;
+    int the_key;
+} tt_player;
 
-void tt_room_draw(tt_room *room);
 
-void tt_room_rtol(tt_room *right, tt_room *left, int permille);
+void tt_player_walk(int delta);
 
-void tt_room_utod(tt_room *up, tt_room *down, int permille);
+void tt_player_draw();
 
 
 #endif

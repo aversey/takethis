@@ -1,0 +1,61 @@
+#include "player.h"
+
+#include "globals.h"
+
+
+void tt_player_draw()
+{
+    int i, j;
+    tt_room *r = ttplayer.room;
+    for (i = 0; i != TT_ROOM_H; ++i) {
+        for (j = 0; j != TT_ROOM_W; ++j) {
+            SDL_Rect d = { 14 + j * 32, 14 + i * 32, 32, 32 };
+            SDL_Rect *f = r->floor[i][j];
+            tt_body *w = r->walls[i][j];
+            if (f) SDL_RenderCopy(ttrdr, tttxr, f, &d);
+            if (w) {
+                SDL_Rect s = {
+                    (w->txrcol * w->anim + w->rem / w->rate % w->anim) * 16,
+                    w->txrrow * 16, 16, 16
+                };
+                SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+            }
+        }
+    }
+    for (i = 0; i != r->bodies_count; ++i) {
+        tt_body *b = r->bodies + i;
+        SDL_Rect s = {
+            (b->txrcol * b->anim + b->rem / b->rate % b->anim) * 16,
+            b->txrrow * 16, 16, 16
+        };
+        SDL_Rect d = { 14 + b->x, 14 + b->y, 32, 32 };
+        SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        if (b->msg) {
+            SDL_Color c = { 255, 255, 255, 255 };
+            SDL_Surface *s = TTF_RenderText_Blended(ttfont, b->msg, c);
+            SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+            SDL_Rect dst = { 50 + b->x, 20 + b->y, s->w, s->h };
+            SDL_RenderCopy(ttrdr, t, 0, &dst);
+            SDL_DestroyTexture(t);
+            SDL_FreeSurface(s);
+        }
+    }
+
+    SDL_Rect d = { 14 + ttplayer.x, 14 + ttplayer.y, 32, 32 };
+    int dir = 0;
+    if (ttplayer.xwalk == 1) dir = 6;
+    else if (ttplayer.xwalk == -1) dir = 2;
+    else if (ttplayer.ywalk == -1) dir = 4;
+    SDL_Rect s = { 16 * (dir + (ttplayer.rem / 100 % 2)),
+                   16 * (5 + ttplayer.variant),
+                   16, 16 };
+    SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+
+    for (i = 0; i != TT_ROOM_H; ++i) {
+        for (j = 0; j != TT_ROOM_W; ++j) {
+            SDL_Rect d = { 14 + j * 32, 14 + i * 32, 32, 32 };
+            SDL_Rect *roof = r->roof[i][j];
+            if (roof) SDL_RenderCopy(ttrdr, tttxr, roof, &d);
+        }
+    }
+}

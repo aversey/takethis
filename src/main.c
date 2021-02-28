@@ -1,32 +1,52 @@
 #include <SDL2/SDL.h>
-#include "room.h"
-#include "texture.h"
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
+#include <stdlib.h>
+#include <time.h>
+#include "globals.h"
+#include "map.h"
+#include "player.h"
+#include "game.h"
 
+
+static SDL_Texture *loadtxr(const char *path)
+{
+    SDL_Surface *surf = SDL_LoadBMP(path);
+    SDL_Texture *res = SDL_CreateTextureFromSurface(ttrdr, surf);
+    SDL_FreeSurface(surf);
+    return res;
+}
 
 int main(int argc, char **argv)
 {
+    SDL_Init(SDL_INIT_EVERYTHING);
+    TTF_Init();
+    Mix_Init(MIX_INIT_OGG);
+    Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096);
     SDL_Window *wdw = SDL_CreateWindow("T A K E T H I S",
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
                                        950, 540, 0);
-    SDL_Renderer *rdr = SDL_CreateRenderer(wdw, -1,
-                                           SDL_RENDERER_ACCELERATED);
-    SDL_Texture *txr = tt_texture_load(rdr);
-    tt_room *room = tt_room_load('0');
+    ttrdr = SDL_CreateRenderer(wdw, -1, SDL_RENDERER_ACCELERATED);
+    tttxr = loadtxr("data/txr.bmp");
+    ttfont = TTF_OpenFont("data/font.otf", 24);
+    ponpon = Mix_LoadMUS("data/ponpon.ogg");
+    tt_map_load();
 
-    SDL_SetRenderDrawColor(rdr, 215, 174, 0, 255);
+    srand(time(0));
+    SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
 
-    int n;
-    for (n = 0; n != 200; ++n) {
-        SDL_RenderClear(rdr);
-        tt_room_draw(rdr, txr, room);
-        SDL_RenderPresent(rdr);
-        SDL_Delay(25);
-    }
+    tt_mainloop();
 
-    SDL_DestroyTexture(txr);
-    SDL_DestroyRenderer(rdr);
+    tt_map_free();
+    TTF_CloseFont(ttfont);
+    SDL_DestroyTexture(tttxr);
+    SDL_DestroyRenderer(ttrdr);
     SDL_DestroyWindow(wdw);
+    Mix_HaltMusic();
+    Mix_FreeMusic(ponpon);
+    Mix_CloseAudio();
+    TTF_Quit();
     SDL_Quit();
     return 0;
 }

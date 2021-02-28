@@ -1,60 +1,27 @@
 #include "room.h"
 
-#include <stdio.h>
-#include "texture.h"
 
-
-static SDL_Rect *rect(int x, int y, int w, int h)
+int tt_room_collide(tt_room *room, SDL_Rect *box)
 {
-    SDL_Rect *res = malloc(sizeof(*res));
-    res->x = x;
-    res->y = y;
-    res->w = w;
-    res->h = h;
-    return res;
-}
-
-tt_room *tt_room_load(char c)
-{
-    tt_room *res = malloc(sizeof(*res));
-    char path[] = "data/rooms/0";
-    path[11] = c;
-    FILE *f = fopen(path, "r");
+    SDL_Rect r = { 0, 0, 32, 32 };
     int i, j;
     for (i = 0; i != TT_ROOM_H; ++i) {
+        r.y = 32 * i;
         for (j = 0; j != TT_ROOM_W; ++j) {
-            int type = fgetc(f);
-            res->tiletypes[i][j] = type;
-            res->bodies[i][j] = 0;
-            int id = fgetc(f);
-            if (id == ' ') id = '0';
-            if (id < '0' || '9' < id) goto error;
-            id = (id - '0') * 16;
-            if (type == '.')      res->tiles[i][j] = rect(id, 16, 16, 16);
-            else if (type == '#') res->tiles[i][j] = rect(id, 0,  16, 16);
-            else goto error;
+            r.x = 32 * j;
+            if (SDL_HasIntersection(box, room->walls[i][j] ? &r : 0))
+                return 1;
         }
-        fgetc(f);
     }
-    fclose(f);
-    return res;
-error:
-    fclose(f);
-    free(res);
     return 0;
 }
 
-
-void tt_room_draw(SDL_Renderer *rdr, SDL_Texture *txr, tt_room *room)
+int tt_room_out(tt_room *room, SDL_Rect *box)
 {
-    int i, j;
-    for (i = 0; i != TT_ROOM_H; ++i) {
-        for (j = 0; j != TT_ROOM_W; ++j) {
-            const SDL_Rect *src = room->tiles[i][j];
-            if (src) {
-                SDL_Rect dst = { 30 + 32 * j, 30 + 32 * i, 32, 32 };
-                SDL_RenderCopy(rdr, txr, src, &dst);
-            }
-        }
-    }
+    if (!box) return 0;
+    if (box->y < 0) return 1;
+    if (box->x + box->w > TT_ROOM_W * 32) return 2;
+    if (box->y + box->h > TT_ROOM_H * 32) return 3;
+    if (box->x < 0) return 4;
+    return 0;
 }
