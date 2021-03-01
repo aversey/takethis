@@ -159,7 +159,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 7;
+                b->txrrow = 8;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
@@ -177,7 +177,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 7;
+                b->txrrow = 8;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
@@ -195,7 +195,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 9;
+                b->txrrow = 10;
                 b->txrcol = id;
                 b->anim = 1;
                 b->rate = 100;
@@ -214,7 +214,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 8;
+                b->txrrow = 9;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
@@ -248,7 +248,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xrem = 0;
                 b->yrem = 0;
                 b->rem = 0;
-                b->txrrow = 6;
+                b->txrrow = 7;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 100 + (rand() % 50 - 25);

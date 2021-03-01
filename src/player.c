@@ -27,14 +27,14 @@ void tt_player_draw()
     if (ttplayer.zhiv_lenin) {
         {
             SDL_Rect src = { 32 + 32 * (ttplayer.lenin_rem / 200 % 2),
-                             16 * 11 + 4, 32, 38 };
+                             16 * 12 + 4, 32, 38 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos,
                              14 + 32 + 96 - 8 - 38 * 2, 64, 38 * 2 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
         }
         {
             SDL_Rect src = { 96 + 64 * (ttplayer.lenin_rem / 200 % 2),
-                             16 * 11, 64, 48 };
+                             16 * 12, 64, 48 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32,
                              110, 128, 96 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
@@ -67,7 +67,7 @@ void tt_player_draw()
     else if (ttplayer.ywalk == -1) dir = 4;
     SDL_Rect s = { 16 * (8 * ttplayer.variant +
                          dir + (ttplayer.rem / 100 % 2)),
-                   16 * 5,
+                   16 * 6,
                    16, 16 };
     SDL_RenderCopy(ttrdr, tttxr, &s, &d);
 
@@ -75,7 +75,7 @@ void tt_player_draw()
         double r = ttplayer.until_gulag / 10;
         double f = (double)(ttplayer.until_gulag) / 3000 *
                    2 * 3.14159265358979323846;
-        SDL_Rect s = { 0, 16 * 11, 32, 48 };
+        SDL_Rect s = { 0, 16 * 12, 32, 48 };
         SDL_Rect d = { ttplayer.x - 16 + r * cos(f),
                        ttplayer.y - 32 + r * sin(f),
                        64, 96 };

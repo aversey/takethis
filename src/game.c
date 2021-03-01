@@ -50,7 +50,7 @@ static void step(int d)
                 b->xrem = 0;
                 b->yrem = 0;
                 b->rem = 0;
-                b->txrrow = 7;
+                b->txrrow = 8;
                 b->txrcol = rand() % 4;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
@@ -165,7 +165,7 @@ static void gotofirstroom()
         SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
         SDL_RenderFillRect(ttrdr, &d);
         {
-            SDL_Rect src = { 0, 16 * 5, 16, 16 };
+            SDL_Rect src = { 0, 16 * 6, 16, 16 };
             SDL_Rect dst = { 14 + ttplayer.x - delta +
                              rand() % delta,
                              14 + ttplayer.y - delta +
@@ -313,7 +313,7 @@ static void mausoleum()
         }
         tt_player_draw();
         if (delta >= 500) {
-            SDL_Rect src = { 96, 16 * 11, 64, 48 };
+            SDL_Rect src = { 96, 16 * 12, 64, 48 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32,
                              110, 128, 96 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
@@ -357,14 +357,14 @@ static void mausoleum()
         tt_player_draw();
         {
             int lenin_size = delta * (48 - 4 - 6) / 14300;
-            SDL_Rect src = { 32, 16 * 11 + 4, 32, lenin_size };
+            SDL_Rect src = { 32, 16 * 12 + 4, 32, lenin_size };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos,
                              14 + 32 + 96 - 8 - lenin_size * 2,
                              64, lenin_size * 2 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
         }
         {
-            SDL_Rect src = { 96, 16 * 11, 64, 48 };
+            SDL_Rect src = { 96, 16 * 12, 64, 48 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32,
                              110, 128, 96 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
@@ -509,7 +509,7 @@ void changeroom(int out)
     else if (ttplayer.ywalk == -1) dir = 4;
     SDL_Rect s = { 16 * (8 * ttplayer.variant +
                          dir + (ttplayer.rem / 100 % 2)),
-                   16 * 5,
+                   16 * 6,
                    16, 16 };
     SDL_RenderCopy(ttrdr, tttxr, &s, &d);
         }
