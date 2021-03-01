@@ -310,6 +310,12 @@ static void mausoleum()
                                    255 - (delta - 500) * 256 / 500);
         }
         tt_player_draw();
+        if (delta >= 500) {
+            SDL_Rect src = { 96, 16 * 11, 64, 48 };
+            SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32,
+                             110, 128, 96 };
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+        }
         SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
         SDL_RenderFillRect(ttrdr, &d);
         SDL_RenderPresent(ttrdr);
