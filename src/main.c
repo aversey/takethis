@@ -30,9 +30,10 @@ int main(int argc, char **argv)
     ttrdr = SDL_CreateRenderer(wdw, -1, SDL_RENDERER_ACCELERATED);
     tttxr = loadtxr("data/txr.bmp");
     ttfont = TTF_OpenFont("data/font.otf", 24);
-    ponpon = Mix_LoadMUS("data/ponpon.ogg");
+    grib = Mix_LoadMUS("data/grib.ogg");
     ussr = Mix_LoadMUS("data/ussr.ogg");
     stalin = Mix_LoadMUS("data/stalin.ogg");
+    lenin = Mix_LoadMUS("data/lenin.ogg");
     tt_map_load();
 
     srand(time(0));
@@ -46,9 +47,10 @@ int main(int argc, char **argv)
     SDL_DestroyRenderer(ttrdr);
     SDL_DestroyWindow(wdw);
     Mix_HaltMusic();
+    Mix_FreeMusic(lenin);
     Mix_FreeMusic(stalin);
     Mix_FreeMusic(ussr);
-    Mix_FreeMusic(ponpon);
+    Mix_FreeMusic(grib);
     Mix_CloseAudio();
     TTF_Quit();
     SDL_Quit();

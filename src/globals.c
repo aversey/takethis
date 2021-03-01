@@ -7,9 +7,10 @@ SDL_Texture *tttxr;
 
 SDL_Renderer *ttrdr;
 
-Mix_Music *ponpon;
+Mix_Music *grib;
 Mix_Music *ussr;
 Mix_Music *stalin;
+Mix_Music *lenin;
 
 tt_room ttmap[256];
 

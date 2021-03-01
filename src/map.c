@@ -44,7 +44,7 @@ static void togulag(tt_body *b)
 
 static void gribtake(tt_body *b)
 {
-    Mix_PlayMusic(ponpon, -1);
+    Mix_PlayMusic(grib, -1);
     b->collision_act = do_nothing;
     b->anim = 1;
     b->txrrow = 0;

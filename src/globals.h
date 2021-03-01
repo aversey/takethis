@@ -15,9 +15,10 @@ extern SDL_Texture *tttxr;
 
 extern SDL_Renderer *ttrdr;
 
-extern Mix_Music *ponpon;
+extern Mix_Music *grib;
 extern Mix_Music *ussr;
 extern Mix_Music *stalin;
+extern Mix_Music *lenin;
 
 extern tt_room ttmap[256];
 

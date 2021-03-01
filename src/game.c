@@ -43,11 +43,17 @@ static void step(int d)
     {
         SDL_Rect box = { ttplayer.x, ttplayer.y, 32, 32 };
         int out = tt_room_out(ttplayer.room, &box);
-        if (out) ttplayer.room = ttplayer.room->neighbours[out - 1];
         if (out == 1)      ttplayer.y = TT_ROOM_H * 32 - 32;
         else if (out == 2) ttplayer.x = 0;
         else if (out == 3) ttplayer.y = 0;
         else if (out == 4) ttplayer.x = TT_ROOM_W * 32 - 32;
+        if (out) {
+            ttplayer.room = ttplayer.room->neighbours[out - 1];
+            if (ttplayer.room == ttmap + 'L') {
+                ttplayer.y -= 32;
+                Mix_PlayMusic(lenin, -1);
+            }
+        }
     }
     {
         SDL_Rect box = { ttplayer.x, ttplayer.y, 32, 32 };
