@@ -92,16 +92,12 @@ static void step(int d)
     {
         SDL_Rect box = { ttplayer.x, ttplayer.y, 32, 32 };
         int out = tt_room_out(ttplayer.room, &box);
-        if (out == 1)      ttplayer.y = TT_ROOM_H * 32 - 32;
-        else if (out == 2) ttplayer.x = 0;
-        else if (out == 3) ttplayer.y = 0;
-        else if (out == 4) ttplayer.x = TT_ROOM_W * 32 - 32;
         if (out) {
-            ttplayer.room = ttplayer.room->neighbours[out - 1];
-            if (ttplayer.room == ttmap + 'L') {
-                ttplayer.y -= 32;
-                Mix_PlayMusic(lenin, -1);
+            if (ttplayer.room->neighbours[out - 1] == ttmap + 'L') {
+                Mix_PauseMusic();
                 magic = tt_mausoleum;
+            } else {
+                magic = tt_changeroom + out - 1;
             }
         }
     }
@@ -269,7 +265,59 @@ static void gotogulag()
 
 static void mausoleum()
 {
+    SDL_BlendMode mode;
+    SDL_GetRenderDrawBlendMode(ttrdr, &mode);
     int newticks = SDL_GetTicks();
+    SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_BLEND);
+    while (!q && newticks < ticks + 1000) {
+        int delta = newticks - ticks;
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) q = 1;
+            else if (e.type == SDL_KEYDOWN) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 1;
+                else if (code == SDL_SCANCODE_S)     keys = 1;
+                else if (code == SDL_SCANCODE_A)     keya = 1;
+                else if (code == SDL_SCANCODE_D)     keyd = 1;
+                else if (code == SDL_SCANCODE_UP)    arru = 1;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 1;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 1;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 1;
+            } else if (e.type == SDL_KEYUP) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 0;
+                else if (code == SDL_SCANCODE_S)     keys = 0;
+                else if (code == SDL_SCANCODE_A)     keya = 0;
+                else if (code == SDL_SCANCODE_D)     keyd = 0;
+                else if (code == SDL_SCANCODE_UP)    arru = 0;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 0;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 0;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
+            }
+        }
+        static int roomchanged = 0;
+        SDL_RenderClear(ttrdr);
+        if (delta < 500) SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
+                                                min(255, delta * 256 / 500));
+        else {
+            if (!roomchanged) {
+                roomchanged = 1;
+                ttplayer.room = ttmap + 'L';
+                ttplayer.y = TT_ROOM_H * 32 - 64;
+            }
+            SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
+                                   255 - (delta - 500) * 256 / 500);
+        }
+        tt_player_draw();
+        SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
+        SDL_RenderFillRect(ttrdr, &d);
+        SDL_RenderPresent(ttrdr);
+        newticks = SDL_GetTicks();
+    }
+    ticks = newticks;
+    newticks = SDL_GetTicks();
+    Mix_PlayMusic(lenin, -1);
     while (!q && newticks < ticks + 14300) {
         int delta = newticks - ticks;
         SDL_Event e;
@@ -321,6 +369,172 @@ static void mausoleum()
     ticks = SDL_GetTicks();
 }
 
+void changeroom(int out)
+{
+    int newticks = SDL_GetTicks();
+    while (!q && newticks < ticks + 500) {
+        int delta = newticks - ticks;
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) q = 1;
+            else if (e.type == SDL_KEYDOWN) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 1;
+                else if (code == SDL_SCANCODE_S)     keys = 1;
+                else if (code == SDL_SCANCODE_A)     keya = 1;
+                else if (code == SDL_SCANCODE_D)     keyd = 1;
+                else if (code == SDL_SCANCODE_UP)    arru = 1;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 1;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 1;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 1;
+            } else if (e.type == SDL_KEYUP) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 0;
+                else if (code == SDL_SCANCODE_S)     keys = 0;
+                else if (code == SDL_SCANCODE_A)     keya = 0;
+                else if (code == SDL_SCANCODE_D)     keyd = 0;
+                else if (code == SDL_SCANCODE_UP)    arru = 0;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 0;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 0;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
+            }
+        }
+        SDL_RenderClear(ttrdr);
+        int tox = (out == 3) - (out == 1);
+        int toy = (out == 0) - (out == 4);
+        int transx = tox * (delta * TT_ROOM_W * 32 / 500);
+        int transy = toy * (delta * TT_ROOM_H * 32 / 500);
+        int playx = tox * (delta * -32 / 500);
+        int playy = toy * (delta * -32 / 500);
+        int fullx = tox * TT_ROOM_W * -32;
+        int fully = toy * TT_ROOM_H * -32;
+        {
+    int i, j;
+    tt_room *r = ttplayer.room->neighbours[out];
+    for (i = 0; i != TT_ROOM_H; ++i) {
+        for (j = 0; j != TT_ROOM_W; ++j) {
+            SDL_Rect d = { 14 + j * 32 + fullx + transx,
+                           14 + i * 32 + fully + transy,
+                           32, 32 };
+            SDL_Rect *f = r->floor[i][j];
+            tt_body *w = r->walls[i][j];
+            if (f) SDL_RenderCopy(ttrdr, tttxr, f, &d);
+            if (w) {
+                SDL_Rect s = {
+                    (w->txrcol * w->anim + w->rem / w->rate % w->anim) * 16,
+                    w->txrrow * 16, 16, 16
+                };
+                SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+            }
+        }
+    }
+
+    for (i = 0; i != r->bodies_count; ++i) {
+        tt_body *b = r->bodies + i;
+        SDL_Rect s = {
+            (b->txrcol * b->anim + b->rem / b->rate % b->anim) * 16,
+            b->txrrow * 16, 16, 16
+        };
+        SDL_Rect d = { 14 + b->x + fullx + transx,
+                       14 + b->y + fully + transy,
+                       32, 32 };
+        SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        if (b->msg) {
+            SDL_Color c = { 255, 255, 255, 255 };
+            SDL_Surface *s = TTF_RenderText_Blended(ttfont, b->msg, c);
+            SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+            SDL_Rect dst = { 50 + b->x + fullx + transx,
+                             20 + b->y + fully + transy,
+                             s->w, s->h };
+            SDL_RenderCopy(ttrdr, t, 0, &dst);
+            SDL_DestroyTexture(t);
+            SDL_FreeSurface(s);
+        }
+    }
+        }
+        {
+    int i, j;
+    tt_room *r = ttplayer.room;
+    for (i = 0; i != TT_ROOM_H; ++i) {
+        for (j = 0; j != TT_ROOM_W; ++j) {
+            SDL_Rect d = { 14 + j * 32 + transx, 14 + i * 32 + transy,
+                           32, 32 };
+            SDL_Rect *f = r->floor[i][j];
+            tt_body *w = r->walls[i][j];
+            if (f) SDL_RenderCopy(ttrdr, tttxr, f, &d);
+            if (w) {
+                SDL_Rect s = {
+                    (w->txrcol * w->anim + w->rem / w->rate % w->anim) * 16,
+                    w->txrrow * 16, 16, 16
+                };
+                SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+            }
+        }
+    }
+
+    for (i = 0; i != r->bodies_count; ++i) {
+        tt_body *b = r->bodies + i;
+        SDL_Rect s = {
+            (b->txrcol * b->anim + b->rem / b->rate % b->anim) * 16,
+            b->txrrow * 16, 16, 16
+        };
+        SDL_Rect d = { 14 + b->x + transx, 14 + b->y + transy, 32, 32 };
+        SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        if (b->msg) {
+            SDL_Color c = { 255, 255, 255, 255 };
+            SDL_Surface *s = TTF_RenderText_Blended(ttfont, b->msg, c);
+            SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+            SDL_Rect dst = { 50 + b->x + transx, 20 + b->y + transy,
+                             s->w, s->h };
+            SDL_RenderCopy(ttrdr, t, 0, &dst);
+            SDL_DestroyTexture(t);
+            SDL_FreeSurface(s);
+        }
+    }
+
+    SDL_Rect d = { 14 + ttplayer.x + transx + playx,
+                   14 + ttplayer.y + transy + playy,
+                   32, 32 };
+    int dir = 0;
+    if (ttplayer.xwalk == 1) dir = 6;
+    else if (ttplayer.xwalk == -1) dir = 2;
+    else if (ttplayer.ywalk == -1) dir = 4;
+    SDL_Rect s = { 16 * (8 * ttplayer.variant +
+                         dir + (ttplayer.rem / 100 % 2)),
+                   16 * 5,
+                   16, 16 };
+    SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        }
+        {
+            SDL_Rect d = { 0, 0, 14, 540 };
+            SDL_RenderFillRect(ttrdr, &d);
+        }
+        {
+            SDL_Rect d = { 0, 0, 950, 14 };
+            SDL_RenderFillRect(ttrdr, &d);
+        }
+        {
+            SDL_Rect d = { 14 + TT_ROOM_W * 32, 0,
+                           950 - 14 - TT_ROOM_W * 32, 540 };
+            SDL_RenderFillRect(ttrdr, &d);
+        }
+        {
+            SDL_Rect d = { 0, 14 + TT_ROOM_H * 32,
+                           950, 540 - 14 - TT_ROOM_H * 32 };
+            SDL_RenderFillRect(ttrdr, &d);
+        }
+        SDL_RenderPresent(ttrdr);
+        newticks = SDL_GetTicks();
+    }
+    if (out == 0)      ttplayer.y = TT_ROOM_H * 32 - 32;
+    else if (out == 1) ttplayer.x = 0;
+    else if (out == 2) ttplayer.y = 0;
+    else if (out == 3) ttplayer.x = TT_ROOM_W * 32 - 32;
+    ttplayer.room = ttplayer.room->neighbours[out];
+    ticks = SDL_GetTicks();
+    magic = 0;
+}
+
 void tt_mainloop()
 {
     keyw = keya = keys = keyd = arru = arrr = arrd = arrl = 0;
@@ -365,6 +579,8 @@ void tt_mainloop()
             gotogulag();
         } else if (magic == tt_mausoleum) {
             mausoleum();
+        } else if (magic >= tt_changeroom) {
+            changeroom(magic - tt_changeroom);
         }
     }
 }
