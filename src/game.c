@@ -226,6 +226,8 @@ static void gotogulag()
                 roomchanged = 1;
                 ttplayer.room = ttmap + 'G';
                 ttplayer.zhiv_lenin = 0;
+                ttplayer.x = 32 * 13;
+                ttplayer.y = 32 * 11;
             }
             SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                    255 - (delta - 4200) * 256 / 800);
@@ -407,7 +409,7 @@ void changeroom(int out)
         }
         SDL_RenderClear(ttrdr);
         int tox = (out == 3) - (out == 1);
-        int toy = (out == 0) - (out == 4);
+        int toy = (out == 0) - (out == 2);
         int transx = tox * (delta * TT_ROOM_W * 32 / 500);
         int transy = toy * (delta * TT_ROOM_H * 32 / 500);
         int playx = tox * (delta * -32 / 500);
