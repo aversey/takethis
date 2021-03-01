@@ -2,7 +2,7 @@
 #define TT_INCLUDED_GAME
 
 
-enum { tt_gotofirstroom = 1 };
+enum { tt_gotofirstroom = 1, tt_gotogulag };
 
 extern int magic;
 

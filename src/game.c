@@ -23,7 +23,7 @@ static void step(int d)
         }
         ttplayer.until_gulag -= d;
         if (ttplayer.until_gulag <= 0) {
-            ttplayer.room = ttmap + 'G';
+            magic = tt_gotogulag;
             Mix_PlayMusic(ussr, -1);
         }
     }
@@ -132,6 +132,84 @@ static void gotofirstroom()
     ticks = SDL_GetTicks();
 }
 
+static void gotogulag()
+{
+    SDL_BlendMode mode;
+    SDL_GetRenderDrawBlendMode(ttrdr, &mode);
+    int newticks = SDL_GetTicks();
+    SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_BLEND);
+    while (!q && newticks < ticks + 5000) {
+        int delta = newticks - ticks;
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) q = 1;
+            else if (e.type == SDL_KEYDOWN) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 1;
+                else if (code == SDL_SCANCODE_S)     keys = 1;
+                else if (code == SDL_SCANCODE_A)     keya = 1;
+                else if (code == SDL_SCANCODE_D)     keyd = 1;
+                else if (code == SDL_SCANCODE_UP)    arru = 1;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 1;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 1;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 1;
+            } else if (e.type == SDL_KEYUP) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 0;
+                else if (code == SDL_SCANCODE_S)     keys = 0;
+                else if (code == SDL_SCANCODE_A)     keya = 0;
+                else if (code == SDL_SCANCODE_D)     keyd = 0;
+                else if (code == SDL_SCANCODE_UP)    arru = 0;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 0;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 0;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
+            }
+        }
+        static int roomchanged = 0;
+        SDL_RenderClear(ttrdr);
+        if (delta < 4200) SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
+                                                 min(255, delta * 256 / 800));
+        else {
+            if (!roomchanged) {
+                roomchanged = 1;
+                ttplayer.room = ttmap + 'G';
+            }
+            SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
+                                   255 - (delta - 4200) * 256 / 800);
+        }
+        tt_player_draw();
+        SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
+        SDL_RenderFillRect(ttrdr, &d);
+        if (delta < 4200) {
+            SDL_Color c = { 128, 20, 20, min(255, delta * 256 / 800) };
+            SDL_Surface *surf = TTF_RenderText_Blended(
+                    ttfont, "GULAG HAS YOU", c);
+            SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, surf);
+            SDL_Rect dst = { 14 + 32 * 5, 14 + 32 * 7,
+                             surf->w * 2, surf->h * 2 };
+            SDL_RenderCopy(ttrdr, t, 0, &dst);
+            SDL_DestroyTexture(t);
+            SDL_FreeSurface(surf);
+        } else {
+            SDL_Color c = { 128, 20, 20, 255 - (delta - 4200) * 256 / 800 };
+            SDL_Surface *surf = TTF_RenderText_Blended(
+                    ttfont, "GULAG HAS YOU", c);
+            SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, surf);
+            SDL_Rect dst = { 14 + 32 * 5, 14 + 32 * 7,
+                             surf->w * 2, surf->h * 2 };
+            SDL_RenderCopy(ttrdr, t, 0, &dst);
+            SDL_DestroyTexture(t);
+            SDL_FreeSurface(surf);
+        }
+        SDL_RenderPresent(ttrdr);
+        newticks = SDL_GetTicks();
+        SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
+    }
+    SDL_SetRenderDrawBlendMode(ttrdr, mode);
+    magic = 0;
+    ticks = SDL_GetTicks();
+}
+
 void tt_mainloop()
 {
     keyw = keya = keys = keyd = arru = arrr = arrd = arrl = 0;
@@ -172,6 +250,8 @@ void tt_mainloop()
         SDL_RenderPresent(ttrdr);
         if (magic == tt_gotofirstroom) {
             gotofirstroom();
+        } else if (magic == tt_gotogulag) {
+            gotogulag();
         }
     }
 }
