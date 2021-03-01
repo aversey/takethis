@@ -69,8 +69,64 @@ static void step(int d)
 }
 
 
-void gotofirstroom()
+static int q = 0;
+static int keyw, keys, keya, keyd, arru, arrr, arrd, arrl;
+
+static int min(int a, int b)  { return a < b ? a : b; }
+
+static void gotofirstroom()
 {
+    SDL_BlendMode mode;
+    SDL_GetRenderDrawBlendMode(ttrdr, &mode);
+    int newticks = SDL_GetTicks();
+    SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_BLEND);
+    while (!q && newticks < ticks + 800) {
+        int delta = newticks - ticks;
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) q = 1;
+            else if (e.type == SDL_KEYDOWN) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 1;
+                else if (code == SDL_SCANCODE_S)     keys = 1;
+                else if (code == SDL_SCANCODE_A)     keya = 1;
+                else if (code == SDL_SCANCODE_D)     keyd = 1;
+                else if (code == SDL_SCANCODE_UP)    arru = 1;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 1;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 1;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 1;
+            } else if (e.type == SDL_KEYUP) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 0;
+                else if (code == SDL_SCANCODE_S)     keys = 0;
+                else if (code == SDL_SCANCODE_A)     keya = 0;
+                else if (code == SDL_SCANCODE_D)     keyd = 0;
+                else if (code == SDL_SCANCODE_UP)    arru = 0;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 0;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 0;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
+            }
+        }
+        SDL_RenderClear(ttrdr);
+        SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, min(255, delta * 256 / 600));
+        tt_player_draw();
+        SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
+        SDL_RenderFillRect(ttrdr, &d);
+        {
+            SDL_Rect src = { 0, 16 * 5, 16, 16 };
+            SDL_Rect dst = { 14 + ttplayer.x - delta +
+                             rand() % delta,
+                             14 + ttplayer.y - delta +
+                             rand() % delta,
+                             32 + delta / 2 + (rand() % delta),
+                             32 + delta / 2 + (rand() % delta) };
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+        }
+        SDL_RenderPresent(ttrdr);
+        newticks = SDL_GetTicks();
+        SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
+    }
+    SDL_SetRenderDrawBlendMode(ttrdr, mode);
     ttplayer.room = ttmap + '0';
     magic = 0;
     ticks = SDL_GetTicks();
@@ -78,10 +134,8 @@ void gotofirstroom()
 
 void tt_mainloop()
 {
-    int keyw, keys, keya, keyd, arru, arrr, arrd, arrl;
     keyw = keya = keys = keyd = arru = arrr = arrd = arrl = 0;
     ticks = SDL_GetTicks();
-    int q = 0;
     while (!q) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
