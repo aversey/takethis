@@ -22,6 +22,8 @@ typedef struct tt_player {
     int until_gulag;
 
     int lenin_pos;
+    int lenin_pos_rem;
+    int lenin_vel;
     int zhiv_lenin;
     int lenin_rem;
 } tt_player;

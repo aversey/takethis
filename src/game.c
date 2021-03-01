@@ -15,6 +15,17 @@ static void step(int d)
     if (xw || yw) {
         ttplayer.rem += d;
     }
+    if (ttplayer.zhiv_lenin) {
+        int oldpos = ttplayer.lenin_pos;
+        ttplayer.lenin_rem += d;
+        ttplayer.lenin_pos_rem += d * ttplayer.lenin_vel;
+        ttplayer.lenin_pos += ttplayer.lenin_pos_rem / 1000;
+        ttplayer.lenin_pos_rem = ttplayer.lenin_pos_rem % 1000;
+        if (ttplayer.lenin_pos < 64 || 32 * 16 < ttplayer.lenin_pos) {
+            ttplayer.lenin_pos = oldpos;
+            ttplayer.lenin_vel *= -1;
+        }
+    }
     static int first_gulag = 1;
     if (ttplayer.tobein_gulag && ttplayer.until_gulag > 0) {
         if (first_gulag) {

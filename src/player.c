@@ -26,14 +26,14 @@ void tt_player_draw()
 
     if (ttplayer.zhiv_lenin) {
         {
-            SDL_Rect src = { 32 + 32 * (ttplayer.lenin_rem / 100 % 2),
+            SDL_Rect src = { 32 + 32 * (ttplayer.lenin_rem / 200 % 2),
                              16 * 11 + 4, 32, 38 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos,
                              14 + 32 + 96 - 8 - 38 * 2, 64, 38 * 2 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
         }
         {
-            SDL_Rect src = { 96 + 64 * (ttplayer.lenin_rem / 100 % 2),
+            SDL_Rect src = { 96 + 64 * (ttplayer.lenin_rem / 200 % 2),
                              16 * 11, 64, 48 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32,
                              110, 128, 96 };
