@@ -90,7 +90,7 @@ static void loadroom(tt_room *r, FILE *f)
                 ttplayer.lenin_pos_rem = 0;
                 ttplayer.zhiv_lenin = 0;
                 ttplayer.lenin_rem = 0;
-                ttplayer.lenin_vel = -50;
+                ttplayer.lenin_vel = -53;
                 ttplayer.variant = 0;
                 ttplayer.tobein_gulag = 0;
                 ttplayer.until_gulag = 5300;

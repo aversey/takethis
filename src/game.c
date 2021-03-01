@@ -8,6 +8,15 @@ int magic = 0;
 
 static int ticks;
 
+static const char *gulagmsg = "          GULAG HAS YOU";
+
+static void directly_gulag(tt_body *b)
+{
+    gulagmsg = " Communism is Indestructable";
+    magic = tt_gotogulag;
+    Mix_PlayMusic(ussr, -1);
+}
+
 static void step(int d)
 {
     int xw = ttplayer.xwalk * 200;
@@ -25,6 +34,35 @@ static void step(int d)
             ttplayer.lenin_pos = oldpos;
             ttplayer.lenin_vel *= -1;
         }
+        static int lenin_grib = 0;
+        if (ttplayer.lenin_rem % 1000 > 500) {
+            if (!lenin_grib) {
+                lenin_grib = 1;
+                ttplayer.room->bodies_count++;
+                ttplayer.room->bodies = realloc(
+                    ttplayer.room->bodies,
+                    sizeof(tt_body) * ttplayer.room->bodies_count
+                );
+                tt_body *b = ttplayer.room->bodies +
+                             ttplayer.room->bodies_count - 1;
+                b->x = ttplayer.lenin_pos;
+                b->y = 32;
+                b->xrem = 0;
+                b->yrem = 0;
+                b->rem = 0;
+                b->txrrow = 7;
+                b->txrcol = rand() % 4;
+                b->anim = 4;
+                b->rate = 150 + (rand() % 50 - 25);
+                b->collision_act = directly_gulag;
+                b->msg = 0;
+                b->msglen = 0;
+                b->yvel = rand() % 100 - 50;
+                b->yvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+                b->xvel = rand() % 100 - 50;
+                b->xvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+            }
+        } else if (lenin_grib) lenin_grib = 0;
     }
     static int first_gulag = 1;
     if (ttplayer.tobein_gulag && ttplayer.until_gulag > 0) {
@@ -202,9 +240,9 @@ static void gotogulag()
         if (delta < 4200) {
             SDL_Color c = { 128, 20, 20, min(255, delta * 256 / 800) };
             SDL_Surface *surf = TTF_RenderText_Blended(
-                    ttfont, "GULAG HAS YOU", c);
+                    ttfont, gulagmsg, c);
             SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, surf);
-            SDL_Rect dst = { 14 + 32 * 5, 14 + 32 * 7,
+            SDL_Rect dst = { 14, 14 + 32 * 7,
                              surf->w * 2, surf->h * 2 };
             SDL_RenderCopy(ttrdr, t, 0, &dst);
             SDL_DestroyTexture(t);
@@ -212,9 +250,9 @@ static void gotogulag()
         } else {
             SDL_Color c = { 128, 20, 20, 255 - (delta - 4200) * 256 / 800 };
             SDL_Surface *surf = TTF_RenderText_Blended(
-                    ttfont, "GULAG HAS YOU", c);
+                    ttfont, gulagmsg, c);
             SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, surf);
-            SDL_Rect dst = { 14 + 32 * 5, 14 + 32 * 7,
+            SDL_Rect dst = { 14, 14 + 32 * 7,
                              surf->w * 2, surf->h * 2 };
             SDL_RenderCopy(ttrdr, t, 0, &dst);
             SDL_DestroyTexture(t);
