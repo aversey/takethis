@@ -20,6 +20,10 @@ typedef struct tt_player {
     int the_key;
     int tobein_gulag;
     int until_gulag;
+
+    int lenin_pos;
+    int zhiv_lenin;
+    int lenin_rem;
 } tt_player;
 
 

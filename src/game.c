@@ -52,6 +52,7 @@ static void step(int d)
             if (ttplayer.room == ttmap + 'L') {
                 ttplayer.y -= 32;
                 Mix_PlayMusic(lenin, -1);
+                magic = tt_mausoleum;
             }
         }
     }
@@ -179,6 +180,7 @@ static void gotogulag()
             if (!roomchanged) {
                 roomchanged = 1;
                 ttplayer.room = ttmap + 'G';
+                ttplayer.zhiv_lenin = 0;
             }
             SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                    255 - (delta - 4200) * 256 / 800);
@@ -212,6 +214,60 @@ static void gotogulag()
         SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
     }
     SDL_SetRenderDrawBlendMode(ttrdr, mode);
+    magic = 0;
+    ticks = SDL_GetTicks();
+}
+
+static void mausoleum()
+{
+    int newticks = SDL_GetTicks();
+    while (!q && newticks < ticks + 14300) {
+        int delta = newticks - ticks;
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) q = 1;
+            else if (e.type == SDL_KEYDOWN) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 1;
+                else if (code == SDL_SCANCODE_S)     keys = 1;
+                else if (code == SDL_SCANCODE_A)     keya = 1;
+                else if (code == SDL_SCANCODE_D)     keyd = 1;
+                else if (code == SDL_SCANCODE_UP)    arru = 1;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 1;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 1;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 1;
+            } else if (e.type == SDL_KEYUP) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W)          keyw = 0;
+                else if (code == SDL_SCANCODE_S)     keys = 0;
+                else if (code == SDL_SCANCODE_A)     keya = 0;
+                else if (code == SDL_SCANCODE_D)     keyd = 0;
+                else if (code == SDL_SCANCODE_UP)    arru = 0;
+                else if (code == SDL_SCANCODE_RIGHT) arrr = 0;
+                else if (code == SDL_SCANCODE_DOWN)  arrd = 0;
+                else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
+            }
+        }
+        SDL_RenderClear(ttrdr);
+        tt_player_draw();
+        {
+            int lenin_size = delta * (48 - 4 - 6) / 14300;
+            SDL_Rect src = { 32, 16 * 11 + 4, 32, lenin_size };
+            SDL_Rect dst = { 14 + ttplayer.lenin_pos,
+                             14 + 32 + 96 - 8 - lenin_size * 2,
+                             64, lenin_size * 2 };
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+        }
+        {
+            SDL_Rect src = { 96, 16 * 11, 64, 48 };
+            SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32,
+                             110, 128, 96 };
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+        }
+        SDL_RenderPresent(ttrdr);
+        newticks = SDL_GetTicks();
+    }
+    ttplayer.zhiv_lenin = 1;
     magic = 0;
     ticks = SDL_GetTicks();
 }
@@ -258,6 +314,8 @@ void tt_mainloop()
             gotofirstroom();
         } else if (magic == tt_gotogulag) {
             gotogulag();
+        } else if (magic == tt_mausoleum) {
+            mausoleum();
         }
     }
 }

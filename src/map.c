@@ -86,6 +86,9 @@ static void loadroom(tt_room *r, FILE *f)
                 ttplayer.money = 0;
                 ttplayer.keys = 0;
                 ttplayer.the_key = 0;
+                ttplayer.lenin_pos = 32 * 9;
+                ttplayer.zhiv_lenin = 0;
+                ttplayer.lenin_rem = 0;
                 ttplayer.variant = 0;
                 ttplayer.tobein_gulag = 0;
                 ttplayer.until_gulag = 5300;
