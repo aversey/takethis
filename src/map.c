@@ -31,6 +31,17 @@ static SDL_Rect *newtile(int row, int col)
 static void do_nothing(tt_body *b)
 {}
 
+static void togulag(tt_body *b)
+{
+    ttplayer.tobein_gulag = 1;
+    b->collision_act = do_nothing;
+    b->anim = 1;
+    b->txrrow = 0;
+    b->txrcol = 15;
+    b->msg = 0;
+    b->msglen = 0;
+}
+
 static void gribtake(tt_body *b)
 {
     Mix_PlayMusic(ponpon, -1);
@@ -38,6 +49,9 @@ static void gribtake(tt_body *b)
     b->anim = 1;
     b->txrrow = 0;
     b->txrcol = 15;
+    b->msg = 0;
+    b->msglen = 0;
+    ttplayer.variant = 1;
     magic = tt_gotofirstroom;
 }
 
@@ -56,10 +70,10 @@ static void loadroom(tt_room *r, FILE *f)
             int id   = fgetc(f);
             int c    = id;
             if (id == ' ') id = '0';
-            id -= '0';
+            if (id < 'a') id -= '0';
+            else id = id - 'a' + 10;
             r->floor[i][j] = 0;
             r->walls[i][j] = 0;
-            r->roof[i][j]  = 0;
             if (type == '@') {
                 ttplayer.room = r;
                 ttplayer.x = j * 32;
@@ -72,7 +86,9 @@ static void loadroom(tt_room *r, FILE *f)
                 ttplayer.money = 0;
                 ttplayer.keys = 0;
                 ttplayer.the_key = 0;
-                ttplayer.variant = 1;
+                ttplayer.variant = 0;
+                ttplayer.tobein_gulag = 0;
+                ttplayer.until_gulag = 5300;
                 r->floor[i][j] = newtile(0, default_floor_id);
             } else if (type == '#') {
                 r->walls[i][j] = malloc(sizeof(tt_body));
@@ -104,7 +120,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 8;
+                b->txrrow = 7;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
@@ -122,7 +138,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 8;
+                b->txrrow = 7;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
@@ -140,7 +156,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 10;
+                b->txrrow = 9;
                 b->txrcol = id;
                 b->anim = 1;
                 b->rate = 100;
@@ -159,16 +175,13 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel = 0;
                 b->yvel = 0;
                 b->rem = 0;
-                b->txrrow = 9;
+                b->txrrow = 8;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
                 b->collision_act = do_nothing;
                 b->msg = 0;
                 b->msglen = 0;
-            } else if (type == 'X') {
-                r->floor[i][j] = newtile(0, default_floor_id);
-                r->roof[i][j] = newtile(5, id);
             } else if (type == '=') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;
@@ -196,11 +209,11 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xrem = 0;
                 b->yrem = 0;
                 b->rem = 0;
-                b->txrrow = 7;
+                b->txrrow = 6;
                 b->txrcol = id;
                 b->anim = 4;
                 b->rate = 100 + (rand() % 50 - 25);
-                b->collision_act = 0; /* todo: kill */
+                b->collision_act = togulag;
             }
         }
         fgetc(f);

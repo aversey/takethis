@@ -10,10 +10,16 @@ static int ticks;
 
 static void step(int d)
 {
-    int xw = ttplayer.xwalk * 137;
-    int yw = ttplayer.ywalk * 137;
+    int xw = ttplayer.xwalk * 200;
+    int yw = ttplayer.ywalk * 200;
     if (xw || yw) {
         ttplayer.rem += d;
+    }
+    if (ttplayer.tobein_gulag && ttplayer.until_gulag > 0) {
+        ttplayer.until_gulag -= d;
+        if (ttplayer.until_gulag <= 0) {
+            ttplayer.room = ttmap + 'G';
+        }
     }
     if (xw && yw) {
         ttplayer.xrem += (double)(xw * d) / sqrt(2);

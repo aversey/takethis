@@ -18,6 +18,8 @@ typedef struct tt_player {
     int money;
     int keys;
     int the_key;
+    int tobein_gulag;
+    int until_gulag;
 } tt_player;
 
 

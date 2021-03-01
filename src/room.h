@@ -12,7 +12,6 @@
 typedef struct tt_room {
     SDL_Rect *floor[TT_ROOM_H][TT_ROOM_W];
     tt_body *walls[TT_ROOM_H][TT_ROOM_W];
-    SDL_Rect *roof[TT_ROOM_H][TT_ROOM_W];
     tt_body *bodies;
     int bodies_count;
     struct tt_room *neighbours[4];

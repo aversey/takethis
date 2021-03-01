@@ -17,7 +17,7 @@ else
 CFLAGS  += -O3
 endif
 # Use SDL:
-LFLAGS   = -lSDL2 -lSDL2_ttf -lSDL2_mixer
+LFLAGS   = -lSDL2 -lSDL2_ttf -lSDL2_mixer -lm
 
 # Directories definitions:
 BUILD    = build

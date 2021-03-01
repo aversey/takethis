@@ -1,5 +1,6 @@
 #include "player.h"
 
+#include <math.h>
 #include "globals.h"
 
 
@@ -46,16 +47,20 @@ void tt_player_draw()
     if (ttplayer.xwalk == 1) dir = 6;
     else if (ttplayer.xwalk == -1) dir = 2;
     else if (ttplayer.ywalk == -1) dir = 4;
-    SDL_Rect s = { 16 * (dir + (ttplayer.rem / 100 % 2)),
-                   16 * (5 + ttplayer.variant),
+    SDL_Rect s = { 16 * (8 * ttplayer.variant +
+                         dir + (ttplayer.rem / 100 % 2)),
+                   16 * 5,
                    16, 16 };
     SDL_RenderCopy(ttrdr, tttxr, &s, &d);
 
-    for (i = 0; i != TT_ROOM_H; ++i) {
-        for (j = 0; j != TT_ROOM_W; ++j) {
-            SDL_Rect d = { 14 + j * 32, 14 + i * 32, 32, 32 };
-            SDL_Rect *roof = r->roof[i][j];
-            if (roof) SDL_RenderCopy(ttrdr, tttxr, roof, &d);
-        }
+    if (ttplayer.until_gulag > 0) {
+        double r = ttplayer.until_gulag / 10;
+        double f = (double)(ttplayer.until_gulag) / 3000 *
+                   2 * 3.14159265358979323846;
+        SDL_Rect s = { 0, 16 * 11, 16, 32 };
+        SDL_Rect d = { ttplayer.x + r * cos(f),
+                       ttplayer.y - 16 + r * sin(f),
+                       32, 64 };
+        SDL_RenderCopy(ttrdr, tttxr, &s, &d);
     }
 }
