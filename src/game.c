@@ -15,7 +15,12 @@ static void step(int d)
     if (xw || yw) {
         ttplayer.rem += d;
     }
+    static int first_gulag = 1;
     if (ttplayer.tobein_gulag && ttplayer.until_gulag > 0) {
+        if (first_gulag) {
+            first_gulag = 0;
+            Mix_PlayMusic(stalin, -1);
+        }
         ttplayer.until_gulag -= d;
         if (ttplayer.until_gulag <= 0) {
             ttplayer.room = ttmap + 'G';

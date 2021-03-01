@@ -9,6 +9,7 @@ SDL_Renderer *ttrdr;
 
 Mix_Music *ponpon;
 Mix_Music *ussr;
+Mix_Music *stalin;
 
 tt_room ttmap[256];
 
