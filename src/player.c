@@ -57,10 +57,10 @@ void tt_player_draw()
         double r = ttplayer.until_gulag / 10;
         double f = (double)(ttplayer.until_gulag) / 3000 *
                    2 * 3.14159265358979323846;
-        SDL_Rect s = { 0, 16 * 11, 16, 32 };
-        SDL_Rect d = { ttplayer.x + r * cos(f),
-                       ttplayer.y - 16 + r * sin(f),
-                       32, 64 };
+        SDL_Rect s = { 0, 16 * 11, 32, 48 };
+        SDL_Rect d = { ttplayer.x - 16 + r * cos(f),
+                       ttplayer.y - 32 + r * sin(f),
+                       64, 96 };
         SDL_RenderCopy(ttrdr, tttxr, &s, &d);
     }
 }
