@@ -90,7 +90,41 @@ static void loadroom(tt_room *r, FILE *f)
                 ttplayer.tobein_gulag = 0;
                 ttplayer.until_gulag = 5300;
                 r->floor[i][j] = newtile(0, default_floor_id);
-            } else if (type == '#') {
+            } else if (type == 'y') {
+                r->walls[i][j] = malloc(sizeof(tt_body));
+                tt_body *b = r->walls[i][j];
+                b->x = j * 32;
+                b->y = i * 32;
+                b->xrem = 0;
+                b->yrem = 0;
+                b->xvel = 0;
+                b->yvel = 0;
+                b->rem = 0;
+                b->txrrow = 2;
+                b->txrcol = id;
+                b->anim = 1;
+                b->rate = 1;
+                b->collision_act = do_nothing;
+                b->msg = 0;
+                b->msglen = 0;
+            } else if (type == 'b') {
+                r->walls[i][j] = malloc(sizeof(tt_body));
+                tt_body *b = r->walls[i][j];
+                b->x = j * 32;
+                b->y = i * 32;
+                b->xrem = 0;
+                b->yrem = 0;
+                b->xvel = 0;
+                b->yvel = 0;
+                b->rem = 0;
+                b->txrrow = 3;
+                b->txrcol = id;
+                b->anim = 1;
+                b->rate = 1;
+                b->collision_act = do_nothing;
+                b->msg = 0;
+                b->msglen = 0;
+            } else if (type == 'r') {
                 r->walls[i][j] = malloc(sizeof(tt_body));
                 tt_body *b = r->walls[i][j];
                 b->x = j * 32;
@@ -107,7 +141,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->collision_act = do_nothing;
                 b->msg = 0;
                 b->msglen = 0;
-            } else if (type == 'M') {
+            } else if (type == 'g') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;
                 r->bodies = realloc(r->bodies,
@@ -145,7 +179,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->collision_act = do_nothing;
                 b->msg = 0;
                 b->msglen = 0;
-            } else if (type == '&') {
+            } else if (type == ';') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->walls[i][j] = malloc(sizeof(tt_body));
                 tt_body *b = r->walls[i][j];
