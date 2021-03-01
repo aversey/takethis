@@ -19,6 +19,7 @@ static void step(int d)
         ttplayer.until_gulag -= d;
         if (ttplayer.until_gulag <= 0) {
             ttplayer.room = ttmap + 'G';
+            Mix_PlayMusic(ussr, -1);
         }
     }
     if (xw && yw) {
