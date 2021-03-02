@@ -1008,111 +1008,90 @@ void changeroom(int out)
             SDL_DestroyTexture(t);
             SDL_FreeSurface(s);
         }
-        {
-            SDL_Rect src = { 16, 16 * 11, 16, 16 };
-            SDL_Rect d   = { 20 + TT_ROOM_W * 32 + 32, 12 + 96, 64, 64 };
-            SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-            int count  = ttplayer.keys[1];
-            int digits = 1;
-            while (count / 10) {
-                ++digits;
-                count /= 10;
-            }
-            char *text = malloc(3 + digits);
-            text[0]    = 'x';
-            text[1]    = ' ';
-            int i;
-            count = ttplayer.keys[1];
-            for (i = digits + 1; i != 1; --i) {
-                text[i] = count % 10 + '0';
-                count /= 10;
-            }
-            text[digits + 2] = 0;
-            SDL_Color c      = { 255, 255, 255, 255 };
-            SDL_RenderPresent(ttrdr);
-            newticks = SDL_GetTicks();
-        }
-        if (out == 0) ttplayer.y = TT_ROOM_H * 32 - 32;
-        else if (out == 1)
-            ttplayer.x = 0;
-        else if (out == 2)
-            ttplayer.y = 0;
-        else if (out == 3)
-            ttplayer.x = TT_ROOM_W * 32 - 32;
-        ttplayer.room = ttplayer.room->neighbours[out];
-        ticks         = SDL_GetTicks();
-        magic         = 0;
+        SDL_RenderPresent(ttrdr);
+        newticks = SDL_GetTicks();
     }
+    if (out == 0) ttplayer.y = TT_ROOM_H * 32 - 32;
+    else if (out == 1)
+        ttplayer.x = 0;
+    else if (out == 2)
+        ttplayer.y = 0;
+    else if (out == 3)
+        ttplayer.x = TT_ROOM_W * 32 - 32;
+    ttplayer.room = ttplayer.room->neighbours[out];
+    ticks         = SDL_GetTicks();
+    magic         = 0;
+}
 
-    void tt_mainloop()
-    {
-        keyw = keya = keys = keyd = arru = arrr = arrd = arrl = 0;
-        ticks = SDL_GetTicks();
-        while (!q) {
-            SDL_Event e;
-            while (SDL_PollEvent(&e)) {
-                if (e.type == SDL_QUIT) q = 1;
-                else if (e.type == SDL_KEYDOWN) {
-                    int code = e.key.keysym.scancode;
-                    if (code == SDL_SCANCODE_W) keyw = 1;
-                    else if (code == SDL_SCANCODE_S)
-                        keys = 1;
-                    else if (code == SDL_SCANCODE_A)
-                        keya = 1;
-                    else if (code == SDL_SCANCODE_D)
-                        keyd = 1;
-                    else if (code == SDL_SCANCODE_UP)
-                        arru = 1;
-                    else if (code == SDL_SCANCODE_RIGHT)
-                        arrr = 1;
-                    else if (code == SDL_SCANCODE_DOWN)
-                        arrd = 1;
-                    else if (code == SDL_SCANCODE_LEFT)
-                        arrl = 1;
-                    else if (code == SDL_SCANCODE_F5)
-                        save();
-                    else if (code == SDL_SCANCODE_F6)
-                        load();
-                    else if (code == SDL_SCANCODE_F11) {
-                        SDL_SetWindowFullscreen(
-                            ttwdw, fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
-                        fullscreen = !fullscreen;
-                    }
-                } else if (e.type == SDL_KEYUP) {
-                    int code = e.key.keysym.scancode;
-                    if (code == SDL_SCANCODE_W) keyw = 0;
-                    else if (code == SDL_SCANCODE_S)
-                        keys = 0;
-                    else if (code == SDL_SCANCODE_A)
-                        keya = 0;
-                    else if (code == SDL_SCANCODE_D)
-                        keyd = 0;
-                    else if (code == SDL_SCANCODE_UP)
-                        arru = 0;
-                    else if (code == SDL_SCANCODE_RIGHT)
-                        arrr = 0;
-                    else if (code == SDL_SCANCODE_DOWN)
-                        arrd = 0;
-                    else if (code == SDL_SCANCODE_LEFT)
-                        arrl = 0;
+void tt_mainloop()
+{
+    keyw = keya = keys = keyd = arru = arrr = arrd = arrl = 0;
+    ticks                                                 = SDL_GetTicks();
+    while (!q) {
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) q = 1;
+            else if (e.type == SDL_KEYDOWN) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W) keyw = 1;
+                else if (code == SDL_SCANCODE_S)
+                    keys = 1;
+                else if (code == SDL_SCANCODE_A)
+                    keya = 1;
+                else if (code == SDL_SCANCODE_D)
+                    keyd = 1;
+                else if (code == SDL_SCANCODE_UP)
+                    arru = 1;
+                else if (code == SDL_SCANCODE_RIGHT)
+                    arrr = 1;
+                else if (code == SDL_SCANCODE_DOWN)
+                    arrd = 1;
+                else if (code == SDL_SCANCODE_LEFT)
+                    arrl = 1;
+                else if (code == SDL_SCANCODE_F5)
+                    save();
+                else if (code == SDL_SCANCODE_F6)
+                    load();
+                else if (code == SDL_SCANCODE_F11) {
+                    SDL_SetWindowFullscreen(
+                        ttwdw, fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+                    fullscreen = !fullscreen;
                 }
-            }
-            ttplayer.ywalk = (keys | arrd) - (keyw | arru);
-            ttplayer.xwalk = (keyd | arrr) - (keya | arrl);
-            int newticks   = SDL_GetTicks();
-            step(newticks - ticks);
-            ticks = newticks;
-            SDL_RenderClear(ttrdr);
-            tt_player_draw();
-            SDL_RenderPresent(ttrdr);
-            if (magic == tt_gotofirstroom) {
-                gotofirstroom();
-            } else if (magic == tt_gotogulag) {
-                gotogulag();
-            } else if (magic == tt_mausoleum) {
-                mausoleum();
-            } else if (magic >= tt_changeroom) {
-                changeroom(magic - tt_changeroom);
+            } else if (e.type == SDL_KEYUP) {
+                int code = e.key.keysym.scancode;
+                if (code == SDL_SCANCODE_W) keyw = 0;
+                else if (code == SDL_SCANCODE_S)
+                    keys = 0;
+                else if (code == SDL_SCANCODE_A)
+                    keya = 0;
+                else if (code == SDL_SCANCODE_D)
+                    keyd = 0;
+                else if (code == SDL_SCANCODE_UP)
+                    arru = 0;
+                else if (code == SDL_SCANCODE_RIGHT)
+                    arrr = 0;
+                else if (code == SDL_SCANCODE_DOWN)
+                    arrd = 0;
+                else if (code == SDL_SCANCODE_LEFT)
+                    arrl = 0;
             }
         }
+        ttplayer.ywalk = (keys | arrd) - (keyw | arru);
+        ttplayer.xwalk = (keyd | arrr) - (keya | arrl);
+        int newticks   = SDL_GetTicks();
+        step(newticks - ticks);
+        ticks = newticks;
+        SDL_RenderClear(ttrdr);
+        tt_player_draw();
+        SDL_RenderPresent(ttrdr);
+        if (magic == tt_gotofirstroom) {
+            gotofirstroom();
+        } else if (magic == tt_gotogulag) {
+            gotogulag();
+        } else if (magic == tt_mausoleum) {
+            mausoleum();
+        } else if (magic >= tt_changeroom) {
+            changeroom(magic - tt_changeroom);
+        }
     }
+}
