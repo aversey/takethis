@@ -475,6 +475,7 @@ static void gotofirstroom()
 
 static void gotogulag()
 {
+    int roomchanged = 0;
     SDL_BlendMode mode;
     SDL_GetRenderDrawBlendMode(ttrdr, &mode);
     int newticks = SDL_GetTicks();
@@ -506,7 +507,6 @@ static void gotogulag()
                 else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
             }
         }
-        static int roomchanged = 0;
         SDL_RenderClear(ttrdr);
         if (delta < 4200) SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                                  min(255, delta * 256 / 800));
@@ -556,6 +556,7 @@ static void gotogulag()
 
 static void mausoleum()
 {
+    int roomchanged = 0;
     SDL_BlendMode mode;
     SDL_GetRenderDrawBlendMode(ttrdr, &mode);
     int newticks = SDL_GetTicks();
@@ -587,7 +588,6 @@ static void mausoleum()
                 else if (code == SDL_SCANCODE_LEFT)  arrl = 0;
             }
         }
-        static int roomchanged = 0;
         SDL_RenderClear(ttrdr);
         if (delta < 500) SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                                 min(255, delta * 256 / 500));
