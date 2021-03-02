@@ -563,8 +563,8 @@ static void gotofirstroom()
             }
         }
         SDL_RenderClear(ttrdr);
-        SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, min(255, delta * 256 / 600));
         tt_player_draw();
+        SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, min(255, delta * 256 / 600));
         SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
         SDL_RenderFillRect(ttrdr, &d);
         {
@@ -639,21 +639,20 @@ static void gotogulag()
             }
         }
         SDL_RenderClear(ttrdr);
+        if (delta >= 4200 && !roomchanged) {
+            roomchanged         = 1;
+            ttplayer.room       = ttmap + 'G';
+            ttplayer.lenin_zhiv = 0;
+            ttplayer.x          = 32 * 13;
+            ttplayer.y          = 32 * 11;
+        }
+        tt_player_draw();
         if (delta < 4200)
             SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                    min(255, delta * 256 / 800));
-        else {
-            if (!roomchanged) {
-                roomchanged         = 1;
-                ttplayer.room       = ttmap + 'G';
-                ttplayer.lenin_zhiv = 0;
-                ttplayer.x          = 32 * 13;
-                ttplayer.y          = 32 * 11;
-            }
+        else
             SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                    255 - (delta - 4200) * 256 / 800);
-        }
-        tt_player_draw();
         SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
         SDL_RenderFillRect(ttrdr, &d);
         if (delta < 4200) {
@@ -736,23 +735,21 @@ static void mausoleum()
             }
         }
         SDL_RenderClear(ttrdr);
+        if (delta >= 500 && !roomchanged) {
+            roomchanged   = 1;
+            ttplayer.room = ttmap + 'L';
+            ttplayer.y    = TT_ROOM_H * 32 - 64;
+        }
+        tt_player_draw();
         if (delta < 500)
             SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
                                    min(255, delta * 256 / 500));
         else {
-            if (!roomchanged) {
-                roomchanged   = 1;
-                ttplayer.room = ttmap + 'L';
-                ttplayer.y    = TT_ROOM_H * 32 - 64;
-            }
-            SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
-                                   255 - (delta - 500) * 256 / 500);
-        }
-        tt_player_draw();
-        if (delta >= 500) {
             SDL_Rect src = { 96, 16 * 12, 64, 48 };
             SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32, 110, 128, 96 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+            SDL_SetRenderDrawColor(ttrdr, 0, 0, 0,
+                                   255 - (delta - 500) * 256 / 500);
         }
         SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
         SDL_RenderFillRect(ttrdr, &d);
@@ -931,27 +928,6 @@ void changeroom(int out)
                     SDL_FreeSurface(s);
                 }
             }
-
-            {
-                SDL_SetTextureAlphaMod(tttxr, 32);
-                SDL_SetRenderTarget(ttrdr, lighttxr);
-                SDL_RenderClear(ttrdr);
-                int i;
-                for (i = 0; i != r->bodies_count; ++i) {
-                    tt_body *b = r->bodies + i;
-                    if ((7 == b->txrrow && b->txrcol <= 7) ||
-                        b->txrrow == 11) {
-                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
-                        SDL_Rect d   = { b->x + fullx + transx,
-                                       b->y + fully + transy, 64, 64 };
-                        SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                    }
-                }
-                SDL_SetTextureAlphaMod(tttxr, 255);
-                SDL_SetRenderTarget(ttrdr, 0);
-                SDL_Rect dst = { 0, 0, 950, 540 };
-                SDL_RenderCopy(ttrdr, lighttxr, 0, &dst);
-            }
         }
         {
             int      i, j;
@@ -1009,23 +985,45 @@ void changeroom(int out)
             SDL_RenderCopy(ttrdr, tttxr, &s, &d);
 
             {
-                SDL_SetTextureAlphaMod(tttxr, 32);
+                SDL_BlendMode bm;
+                SDL_GetTextureBlendMode(tttxr, &bm);
+                SDL_SetTextureBlendMode(tttxr, SDL_BLENDMODE_ADD);
+                SDL_SetTextureAlphaMod(tttxr, 64);
                 SDL_SetRenderTarget(ttrdr, lighttxr);
+                SDL_SetRenderDrawColor(ttrdr, 192, 192, 192, 255);
                 SDL_RenderClear(ttrdr);
                 int i;
+                r = ttplayer.room->neighbours[out];
                 for (i = 0; i != r->bodies_count; ++i) {
                     tt_body *b = r->bodies + i;
                     if ((7 == b->txrrow && b->txrcol <= 7) ||
                         b->txrrow == 11) {
                         SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
-                        SDL_Rect d = { b->x + transx, b->y + transy, 64, 64 };
+                        SDL_Rect d   = { b->x - 16 + fullx + transx,
+                                       b->y - 16 + fully + transy, 96, 96 };
+                        SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                         SDL_RenderCopy(ttrdr, tttxr, &src, &d);
                     }
                 }
+                r = ttplayer.room;
+                for (i = 0; i != r->bodies_count; ++i) {
+                    tt_body *b = r->bodies + i;
+                    if ((7 == b->txrrow && b->txrcol <= 7) ||
+                        b->txrrow == 11) {
+                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        SDL_Rect d = { b->x - 16 + transx, b->y - 16 + transy,
+                                       96, 96 };
+                        SDL_SetTextureColorMod(tttxr, 255, 255, 255);
+                        SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                    }
+                }
+                SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                 SDL_SetTextureAlphaMod(tttxr, 255);
                 SDL_SetRenderTarget(ttrdr, 0);
                 SDL_Rect dst = { 0, 0, 950, 540 };
                 SDL_RenderCopy(ttrdr, lighttxr, 0, &dst);
+                SDL_SetTextureBlendMode(tttxr, bm);
+                SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
             }
         }
         {

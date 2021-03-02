@@ -85,22 +85,30 @@ void tt_player_draw()
     }
 
     {
-        SDL_SetTextureAlphaMod(tttxr, 32);
+        SDL_BlendMode bm;
+        SDL_GetTextureBlendMode(tttxr, &bm);
+        SDL_SetTextureBlendMode(tttxr, SDL_BLENDMODE_ADD);
+        SDL_SetTextureAlphaMod(tttxr, 64);
         SDL_SetRenderTarget(ttrdr, lighttxr);
+        SDL_SetRenderDrawColor(ttrdr, 192, 192, 192, 255);
         SDL_RenderClear(ttrdr);
         int i;
         for (i = 0; i != r->bodies_count; ++i) {
             tt_body *b = r->bodies + i;
             if ((7 == b->txrrow && b->txrcol <= 7) || b->txrrow == 11) {
                 SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
-                SDL_Rect d   = { b->x, b->y, 64, 64 };
+                SDL_Rect d   = { b->x - 16, b->y - 16, 96, 96 };
+                SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                 SDL_RenderCopy(ttrdr, tttxr, &src, &d);
             }
         }
+        SDL_SetTextureColorMod(tttxr, 255, 255, 255);
         SDL_SetTextureAlphaMod(tttxr, 255);
         SDL_SetRenderTarget(ttrdr, 0);
         SDL_Rect dst = { 0, 0, 950, 540 };
         SDL_RenderCopy(ttrdr, lighttxr, 0, &dst);
+        SDL_SetTextureBlendMode(tttxr, bm);
+        SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
     }
 
     {

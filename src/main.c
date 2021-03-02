@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     tttxr    = loadtxr("data/txr.bmp");
     lighttxr = SDL_CreateTexture(ttrdr, SDL_PIXELFORMAT_RGBA8888,
                                  SDL_TEXTUREACCESS_TARGET, 950, 540);
-    SDL_SetTextureBlendMode(lighttxr, SDL_BLENDMODE_ADD);
+    SDL_SetTextureBlendMode(lighttxr, SDL_BLENDMODE_MOD);
     ttfont     = TTF_OpenFont("data/font.otf", 24);
     grib       = Mix_LoadMUS("data/grib.ogg");
     ussr       = Mix_LoadMUS("data/ussr.ogg");
