@@ -7,6 +7,7 @@
 
 
 int magic = 0;
+int first_gulag = 1;
 
 static int ticks;
 
@@ -64,6 +65,7 @@ static int readnum(FILE *f)
 static void save()
 {
     FILE *f = fopen("save", "w");
+    outnum(f, first_gulag);
     if (curmus == grib)        fputs("g\n", f);
     else if (curmus == ussr)   fputs("u\n", f);
     else if (curmus == stalin) fputs("s\n", f);
@@ -151,6 +153,7 @@ static void save()
 static void load()
 {
     FILE *f = fopen("save", "r");
+    first_gulag = readnum(f);
     int c = fgetc(f);
     if (c == 'g') {
         if (curmus != grib) {
@@ -344,7 +347,6 @@ static void step(int d)
             }
         } else if (lenin_grib) lenin_grib = 0;
     }
-    static int first_gulag = 1;
     if (ttplayer.tobein_gulag && ttplayer.until_gulag > 0) {
         if (first_gulag) {
             first_gulag = 0;
