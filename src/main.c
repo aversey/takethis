@@ -23,10 +23,14 @@ int main(int argc, char **argv)
     Mix_Init(MIX_INIT_OGG);
     Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096);
     Mix_AllocateChannels(4);
-    ttwdw      = SDL_CreateWindow("T A K E T H I S", SDL_WINDOWPOS_UNDEFINED,
+    ttwdw = SDL_CreateWindow("T A K E T H I S", SDL_WINDOWPOS_UNDEFINED,
                              SDL_WINDOWPOS_UNDEFINED, 950, 540, 0);
-    ttrdr      = SDL_CreateRenderer(ttwdw, -1, SDL_RENDERER_ACCELERATED);
-    tttxr      = loadtxr("data/txr.bmp");
+    ttrdr = SDL_CreateRenderer(
+        ttwdw, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    tttxr    = loadtxr("data/txr.bmp");
+    lighttxr = SDL_CreateTexture(ttrdr, SDL_PIXELFORMAT_RGBA8888,
+                                 SDL_TEXTUREACCESS_TARGET, 950, 540);
+    SDL_SetTextureBlendMode(lighttxr, SDL_BLENDMODE_ADD);
     ttfont     = TTF_OpenFont("data/font.otf", 24);
     grib       = Mix_LoadMUS("data/grib.ogg");
     ussr       = Mix_LoadMUS("data/ussr.ogg");

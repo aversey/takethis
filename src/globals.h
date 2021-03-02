@@ -12,6 +12,7 @@ extern SDL_Window *ttwdw;
 extern TTF_Font *ttfont;
 
 extern SDL_Texture *tttxr;
+extern SDL_Texture *lighttxr;
 
 extern SDL_Renderer *ttrdr;
 

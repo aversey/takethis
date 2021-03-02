@@ -5,6 +5,7 @@ SDL_Window *ttwdw;
 TTF_Font *ttfont;
 
 SDL_Texture *tttxr;
+SDL_Texture *lighttxr;
 
 SDL_Renderer *ttrdr;
 

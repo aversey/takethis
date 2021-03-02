@@ -401,23 +401,23 @@ static void step(int d)
                 b->msg           = 0;
                 b->msglen        = 0;
                 if (!lenin_until_hadouken) {
-                    b->txrrow        = 7;
-                    b->txrcol        = 2 + rand() % 2;
-                    b->rate = 75 + (rand() % 50 - 25);
-                    b->yvel = rand() % 50 - 25;
-                    b->yvel = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
-                    b->xvel = rand() % 50 - 25;
-                    b->xvel = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
+                    b->txrrow = 7;
+                    b->txrcol = 2 + rand() % 2;
+                    b->rate   = 75 + (rand() % 50 - 25);
+                    b->yvel   = rand() % 50 - 25;
+                    b->yvel   = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
+                    b->xvel   = rand() % 50 - 25;
+                    b->xvel   = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
                     Mix_PlayChannel(-1, tthadouken, 0);
                     lenin_until_hadouken = 3;
                 } else {
-                    b->txrrow        = 8;
-                    b->txrcol        = rand() % 4;
-                    b->rate = 150 + (rand() % 50 - 25);
-                    b->yvel = rand() % 100 - 50;
-                    b->yvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
-                    b->xvel = rand() % 100 - 50;
-                    b->xvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+                    b->txrrow = 8;
+                    b->txrcol = rand() % 4;
+                    b->rate   = 150 + (rand() % 50 - 25);
+                    b->yvel   = rand() % 100 - 50;
+                    b->yvel   = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+                    b->xvel   = rand() % 100 - 50;
+                    b->xvel   = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
                     Mix_PlayChannel(-1, ttlenin, 0);
                     lenin_until_hadouken--;
                 }
@@ -931,6 +931,26 @@ void changeroom(int out)
                     SDL_FreeSurface(s);
                 }
             }
+
+            {
+                SDL_SetTextureAlphaMod(tttxr, 32);
+                SDL_SetRenderTarget(ttrdr, lighttxr);
+                SDL_RenderClear(ttrdr);
+                int i;
+                for (i = 0; i != r->bodies_count; ++i) {
+                    tt_body *b = r->bodies + i;
+                    if ((7 == b->txrrow && b->txrcol <= 7) ||
+                        b->txrrow == 11) {
+                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        SDL_Rect d   = { b->x + fullx + transx,
+                                       b->y + fully + transy, 64, 64 };
+                        SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                    }
+                }
+                SDL_SetTextureAlphaMod(tttxr, 255);
+                SDL_SetRenderTarget(ttrdr, 0);
+                SDL_RenderCopy(ttrdr, lighttxr, 0, 0);
+            }
         }
         {
             int      i, j;
@@ -986,6 +1006,25 @@ void changeroom(int out)
                                  (ttplayer.rem / 100 % 2)),
                            16 * 6, 16, 16 };
             SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+
+            {
+                SDL_SetTextureAlphaMod(tttxr, 32);
+                SDL_SetRenderTarget(ttrdr, lighttxr);
+                SDL_RenderClear(ttrdr);
+                int i;
+                for (i = 0; i != r->bodies_count; ++i) {
+                    tt_body *b = r->bodies + i;
+                    if ((7 == b->txrrow && b->txrcol <= 7) ||
+                        b->txrrow == 11) {
+                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        SDL_Rect d = { b->x + transx, b->y + transy, 64, 64 };
+                        SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                    }
+                }
+                SDL_SetTextureAlphaMod(tttxr, 255);
+                SDL_SetRenderTarget(ttrdr, 0);
+                SDL_RenderCopy(ttrdr, lighttxr, 0, 0);
+            }
         }
         {
             SDL_Rect d = { 0, 0, 14, 540 };

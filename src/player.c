@@ -3,7 +3,6 @@
 #include "globals.h"
 #include <math.h>
 
-
 void tt_player_draw()
 {
     int      i, j;
@@ -84,20 +83,25 @@ void tt_player_draw()
                        ttplayer.y - 32 + r * sin(f), 64, 96 };
         SDL_RenderCopy(ttrdr, tttxr, &s, &d);
     }
-/*
-    {
-        SDL_BlendMode mode;
-        SDL_GetRenderDrawBlendMode(ttrdr, &mode);
-        SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_ADD);
-        SDL_Texture *txr = SDL_CreateTexture(ttrdr, SDL_PIXELFORMAT_RGBA8888,
-                SDL_TEXTUREACCESS_TARGET, 950, 540);
-        SDL_SetRenderTarget(ttrdr, txr);
 
+    {
+        SDL_SetTextureAlphaMod(tttxr, 32);
+        SDL_SetRenderTarget(ttrdr, lighttxr);
+        SDL_RenderClear(ttrdr);
+        int i;
+        for (i = 0; i != r->bodies_count; ++i) {
+            tt_body *b = r->bodies + i;
+            if ((7 == b->txrrow && b->txrcol <= 7) || b->txrrow == 11) {
+                SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                SDL_Rect d   = { b->x, b->y, 64, 64 };
+                SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+            }
+        }
+        SDL_SetTextureAlphaMod(tttxr, 255);
         SDL_SetRenderTarget(ttrdr, 0);
-        SDL_RenderCopy(ttrdr, txr, 0, 0);
-        SDL_SetRenderDrawBlendMode(ttrdr, mode);
+        SDL_RenderCopy(ttrdr, lighttxr, 0, 0);
     }
-*/
+
     {
         SDL_Rect src = { 0, 16 * 11, 16, 16 };
         SDL_Rect d   = { 20 + TT_ROOM_W * 32 + 32, 12 + 32, 64, 64 };
