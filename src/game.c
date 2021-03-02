@@ -296,6 +296,7 @@ static void togulag(tt_body *b)
     b->txrcol             = 15;
     b->msg                = 0;
     b->msglen             = 0;
+    ttplayer.money++;
 }
 
 static void gribtake(tt_body *b)
