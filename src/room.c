@@ -3,7 +3,7 @@
 
 int tt_room_collide(tt_room *room, SDL_Rect *box)
 {
-    SDL_Rect r = { 0, 0, 32, 32 };
+    SDL_Rect r = { 0, 0, 32, 16 };
     int i, j;
     for (i = 0; i != TT_ROOM_H; ++i) {
         r.y = 32 * i;
