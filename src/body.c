@@ -33,7 +33,7 @@ void tt_body_move(int d)
         int eyr = b->yrem;
         move(b, d);
         {
-            SDL_Rect box = {b->x + 5, b->y + 2, 22, 28};
+            SDL_Rect box = { b->x + 5, b->y + 2, 22, 28 };
             if (!tt_room_collide(r, &box) && !tt_room_out(r, &box)) continue;
         }
         b->x    = ex;
@@ -43,7 +43,7 @@ void tt_body_move(int d)
         b->xvel *= -1;
         move(b, d);
         {
-            SDL_Rect box = {b->x + 5, b->y + 2, 22, 28};
+            SDL_Rect box = { b->x + 5, b->y + 2, 22, 28 };
             if (!tt_room_collide(r, &box) && !tt_room_out(r, &box)) continue;
         }
         b->x    = ex;
@@ -54,7 +54,7 @@ void tt_body_move(int d)
         b->yvel *= -1;
         move(b, d);
         {
-            SDL_Rect box = {b->x + 5, b->y + 2, 22, 28};
+            SDL_Rect box = { b->x + 5, b->y + 2, 22, 28 };
             if (!tt_room_collide(r, &box) && !tt_room_out(r, &box)) continue;
         }
         b->x    = ex;
