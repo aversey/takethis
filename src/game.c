@@ -87,7 +87,7 @@ static void save()
     outnum(f, ttplayer.lenin_pos);
     outnum(f, ttplayer.lenin_pos_rem);
     outnum(f, ttplayer.lenin_vel);
-    outnum(f, ttplayer.zhiv_lenin);
+    outnum(f, ttplayer.lenin_zhiv);
     outnum(f, ttplayer.lenin_rem);
     int i;
     for (i = '0'; i != '~'; ++i) {
@@ -196,7 +196,7 @@ static void load()
     ttplayer.lenin_pos = readnum(f);
     ttplayer.lenin_pos_rem = readnum(f);
     ttplayer.lenin_vel = readnum(f);
-    ttplayer.zhiv_lenin = readnum(f);
+    ttplayer.lenin_zhiv = readnum(f);
     ttplayer.lenin_rem = readnum(f);
     tt_map_free();
     int i;
@@ -300,6 +300,20 @@ static void gribtake(tt_body *b)
     magic = tt_gotofirstroom;
 }
 
+static void keytake(tt_body *b)
+{
+    ttplayer.keys[b->txrcol]++;
+    b->collision_act = 0;
+    b->txrrow = 0;
+    b->txrcol = 15;
+    b->msg = 0;
+    b->msglen = 0;
+}
+
+static void doorcol(tt_body *b)
+{
+}
+
 static void step(int d)
 {
     int xw = ttplayer.xwalk * 200;
@@ -307,7 +321,7 @@ static void step(int d)
     if (xw || yw) {
         ttplayer.rem += d;
     }
-    if (ttplayer.zhiv_lenin) {
+    if (ttplayer.lenin_zhiv) {
         int oldpos = ttplayer.lenin_pos;
         ttplayer.lenin_rem += d;
         ttplayer.lenin_pos_rem += d * ttplayer.lenin_vel;
@@ -377,6 +391,7 @@ static void step(int d)
         SDL_Rect box = { ttplayer.x, ttplayer.y, 32, 32 };
         int out = tt_room_out(ttplayer.room, &box);
         if (out) {
+            ttplayer.money--;
             if (ttplayer.room->neighbours[out - 1] == ttmap + 'L') {
                 Mix_PauseMusic();
                 curmus = 0;
@@ -403,8 +418,10 @@ static void step(int d)
             if (SDL_HasIntersection(&body, &box)) {
                 switch (b->collision_act) {
                 case colact_grib:      gribtake(b);       break;
-                case colact_gulag:     togulag(b);      break;
+                case colact_gulag:     togulag(b);        break;
                 case colact_instgulag: directly_gulag(b); break;
+                case colact_key:       keytake(b);        break;
+                case colact_door:      doorcol(b);        break;
                 }
             }
         }
@@ -516,7 +533,7 @@ static void gotogulag()
             if (!roomchanged) {
                 roomchanged = 1;
                 ttplayer.room = ttmap + 'G';
-                ttplayer.zhiv_lenin = 0;
+                ttplayer.lenin_zhiv = 0;
                 ttplayer.x = 32 * 13;
                 ttplayer.y = 32 * 11;
             }
@@ -664,7 +681,7 @@ static void mausoleum()
         SDL_RenderPresent(ttrdr);
         newticks = SDL_GetTicks();
     }
-    ttplayer.zhiv_lenin = 1;
+    ttplayer.lenin_zhiv = 1;
     magic = 0;
     ticks = SDL_GetTicks();
 }

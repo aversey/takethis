@@ -62,7 +62,7 @@ static void loadroom(tt_room *r, FILE *f)
                 ttplayer.keys[1] = 0;
                 ttplayer.lenin_pos = 32 * 9;
                 ttplayer.lenin_pos_rem = 0;
-                ttplayer.zhiv_lenin = 0;
+                ttplayer.lenin_zhiv = 0;
                 ttplayer.lenin_rem = 0;
                 ttplayer.lenin_vel = -53;
                 ttplayer.variant = 0;
@@ -211,6 +211,38 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 100;
                 b->collision_act = 0;
+            } else if (type == 'k') {
+                r->floor[i][j] = newtile(0, default_floor_id);
+                r->bodies_count++;
+                r->bodies = realloc(r->bodies,
+                                    sizeof(tt_body) * r->bodies_count);
+                tt_body *b = r->bodies + r->bodies_count - 1;
+                b->x = j * 32;
+                b->y = i * 32;
+                b->xrem = 0;
+                b->yrem = 0;
+                b->rem = 0;
+                b->txrrow = 11;
+                b->txrcol = id;
+                b->anim = 1;
+                b->rate = 100;
+                b->collision_act = colact_key;
+            } else if (type == 'd') {
+                r->floor[i][j] = newtile(0, default_floor_id);
+                r->bodies_count++;
+                r->bodies = realloc(r->bodies,
+                                    sizeof(tt_body) * r->bodies_count);
+                tt_body *b = r->bodies + r->bodies_count - 1;
+                b->x = j * 32;
+                b->y = i * 32;
+                b->xrem = 0;
+                b->yrem = 0;
+                b->rem = 0;
+                b->txrrow = 4;
+                b->txrcol = id;
+                b->anim = 1;
+                b->rate = 100;
+                b->collision_act = colact_door;
             } else if (type == '$') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;

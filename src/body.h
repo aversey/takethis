@@ -2,7 +2,11 @@
 #define TT_INCLUDED_BODY
 
 
-enum { colact_grib = 1, colact_gulag, colact_instgulag };
+enum { colact_grib = 1,
+       colact_gulag,
+       colact_instgulag,
+       colact_key,
+       colact_door };
 
 typedef struct tt_body {
     int x;

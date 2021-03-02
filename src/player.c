@@ -24,7 +24,7 @@ void tt_player_draw()
         }
     }
 
-    if (ttplayer.zhiv_lenin) {
+    if (ttplayer.lenin_zhiv) {
         {
             SDL_Rect src = { 32 + 32 * (ttplayer.lenin_rem / 200 % 2),
                              16 * 12 + 4, 32, 38 };
@@ -80,5 +80,125 @@ void tt_player_draw()
                        ttplayer.y - 32 + r * sin(f),
                        64, 96 };
         SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+    }
+
+    {
+        SDL_Rect src = { 0, 16 * 11, 16, 16 };
+        SDL_Rect d = { 20 + TT_ROOM_W * 32 + 32,
+                       12 + 32,
+                       64, 64 };
+        SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+        int count = ttplayer.keys[0];
+        int digits = 1;
+        while (count / 10) {
+            ++digits;
+            count /= 10;
+        }
+        char *text = malloc(3 + digits);
+        text[0] = 'x';
+        text[1] = ' ';
+        int i;
+        count = ttplayer.keys[0];
+        for (i = digits + 1; i != 1; --i) {
+            text[i] = count % 10 + '0';
+            count /= 10;
+        }
+        text[digits + 2] = 0;
+        SDL_Color c = { 255, 255, 255, 255 };
+        SDL_Surface *s = TTF_RenderText_Blended(ttfont, text, c);
+        SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+        SDL_Rect dst = { 50 + 32 * TT_ROOM_W + 64, 20 + 32,
+                         s->w * 2, s->h * 2 };
+        SDL_RenderCopy(ttrdr, t, 0, &dst);
+        SDL_DestroyTexture(t);
+        SDL_FreeSurface(s);
+    }
+    {
+        SDL_Rect src = { 16, 16 * 11, 16, 16 };
+        SDL_Rect d = { 20 + TT_ROOM_W * 32 + 32,
+                       12 + 96,
+                       64, 64 };
+        SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+        int count = ttplayer.keys[1];
+        int digits = 1;
+        while (count / 10) {
+            ++digits;
+            count /= 10;
+        }
+        char *text = malloc(3 + digits);
+        text[0] = 'x';
+        text[1] = ' ';
+        int i;
+        count = ttplayer.keys[1];
+        for (i = digits + 1; i != 1; --i) {
+            text[i] = count % 10 + '0';
+            count /= 10;
+        }
+        text[digits + 2] = 0;
+        SDL_Color c = { 255, 255, 255, 255 };
+        SDL_Surface *s = TTF_RenderText_Blended(ttfont, text, c);
+        SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+        SDL_Rect dst = { 50 + 32 * TT_ROOM_W + 64, 20 + 96,
+                         s->w * 2, s->h * 2 };
+        SDL_RenderCopy(ttrdr, t, 0, &dst);
+        SDL_DestroyTexture(t);
+        SDL_FreeSurface(s);
+    }
+    {
+        int count = ttplayer.money;
+        int digits = 1;
+        while (count / 10) {
+            ++digits;
+            count /= 10;
+        }
+        char *text = malloc(4 + digits);
+        text[0] = '$';
+        text[1] = ' ';
+        text[2] = ttplayer.money < 0 ? '-' : ' ';
+        int i;
+        count = ttplayer.money * (ttplayer.money < 0 ? -1 : 1);
+        for (i = digits + 2; i != 2; --i) {
+            text[i] = count % 10 + '0';
+            count /= 10;
+        }
+        text[digits + 3] = 0;
+        SDL_Color c = { 255, 255, 255, 255 };
+        SDL_Surface *s = TTF_RenderText_Blended(ttfont, text, c);
+        SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+        SDL_Rect dst = { 50 + 32 * TT_ROOM_W + 16, 20 + 96 + 96,
+                         s->w * 2, s->h * 2 };
+        SDL_RenderCopy(ttrdr, t, 0, &dst);
+        SDL_DestroyTexture(t);
+        SDL_FreeSurface(s);
+    }
+    if (ttplayer.lenin_rem) {
+        int count = ttplayer.lenin_rem / 1000;
+        int digits = 1;
+        while (count / 10) {
+            ++digits;
+            count /= 10;
+        }
+        char *text = malloc(7 + digits);
+        text[0] = 'T';
+        text[1] = 'i';
+        text[2] = 'm';
+        text[3] = 'e';
+        text[4] = ':';
+        text[5] = ' ';
+        int i;
+        count = ttplayer.lenin_rem / 1000;
+        for (i = digits + 5; i != 5; --i) {
+            text[i] = count % 10 + '0';
+            count /= 10;
+        }
+        text[digits + 6] = 0;
+        SDL_Color c = { 255, 255, 255, 255 };
+        SDL_Surface *s = TTF_RenderText_Blended(ttfont, text, c);
+        SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+        SDL_Rect dst = { 50 + 32 * TT_ROOM_W + 16, 20 + 96 + 96 + 96,
+                         s->w * 2, s->h * 2 };
+        SDL_RenderCopy(ttrdr, t, 0, &dst);
+        SDL_DestroyTexture(t);
+        SDL_FreeSurface(s);
     }
 }
