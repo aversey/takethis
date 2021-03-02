@@ -47,8 +47,13 @@ void tt_player_draw()
             (b->txrcol * b->anim + b->rem / b->rate % b->anim) * 16,
             b->txrrow * 16, 16, 16
         };
-        SDL_Rect d = { 14 + b->x, 14 + b->y, 32, 32 };
-        SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        if (b->isdoor) {
+            SDL_Rect d = { 14 + b->x, 14 + b->y, 32, 32 };
+            SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        } else {
+            SDL_Rect d = { 14 + b->x, 14 + b->y, 32, 32 };
+            SDL_RenderCopy(ttrdr, tttxr, &s, &d);
+        }
         if (b->msg) {
             SDL_Color c = { 255, 255, 255, 255 };
             SDL_Surface *s = TTF_RenderText_Blended(ttfont, b->msg, c);

@@ -117,6 +117,7 @@ static void save()
                     outnum(f, w->anim);
                     outnum(f, w->rate);
                     outnum(f, w->collision_act);
+                    outnum(f, w->isdoor);
                     outnum(f, w->msglen);
                     if (w->msg) fputs(w->msg, f);
                     fputc('\n', f);
@@ -138,6 +139,7 @@ static void save()
             outnum(f, b->anim);
             outnum(f, b->rate);
             outnum(f, b->collision_act);
+            outnum(f, b->isdoor);
             outnum(f, b->msglen);
             if (b->msg) fputs(b->msg, f);
             fputc('\n', f);
@@ -225,6 +227,7 @@ static void load()
                     b->anim = readnum(f);
                     b->rate = readnum(f);
                     b->collision_act = readnum(f);
+                    b->isdoor = readnum(f);
                     b->msglen = readnum(f);
                     if (b->msglen) b->msg = readline(f);
                     else {
@@ -250,6 +253,7 @@ static void load()
             b->anim = readnum(f);
             b->rate = readnum(f);
             b->collision_act = readnum(f);
+            b->isdoor = readnum(f);
             b->msglen = readnum(f);
             if (b->msglen) b->msg = readline(f);
             else {
@@ -312,6 +316,35 @@ static void keytake(tt_body *b)
 
 static void doorcol(tt_body *b)
 {
+    if (ttplayer.keys[b->txrrow - 4]) {
+        int i;
+        tt_room *r = ttplayer.room;
+        tt_body *part = 0;
+        for (i = 0; i != r->bodies_count; i++) {
+            part = r->bodies + i;
+            int dx = (part->x - b->x) / 32;
+            int xe = (part->x - b->x) % 32;
+            int dy = (part->y - b->y) / 32;
+            int ye = (part->y - b->y) % 32;
+            if (part->isdoor && !xe && !ye &&
+                ((dx == 1 || dx == -1) ^ (dy == 1 || dy == -1))) break;
+        }
+        free(r->walls[b->y / 32][b->x / 32]);
+        r->walls[b->y / 32][b->x / 32] = 0;
+        free(r->walls[part->y / 32][part->x / 32]);
+        r->walls[part->y / 32][part->x / 32] = 0;
+        ttplayer.keys[b->txrrow - 4]--;
+        b->collision_act = 0;
+        b->txrrow = 0;
+        b->txrcol = 15;
+        b->msg = 0;
+        b->msglen = 0;
+        part->collision_act = 0;
+        part->txrrow = 0;
+        part->txrcol = 15;
+        part->msg = 0;
+        part->msglen = 0;
+    }
 }
 
 static void step(int d)
@@ -414,14 +447,27 @@ static void step(int d)
         SDL_Rect box = { ttplayer.x, ttplayer.y, 32, 32 };
         for (i = 0; i != ttplayer.room->bodies_count; ++i) {
             tt_body *b = ttplayer.room->bodies + i;
-            SDL_Rect body = { 4 + b->x, 4 + b->y, 24, 24 };
-            if (SDL_HasIntersection(&body, &box)) {
-                switch (b->collision_act) {
-                case colact_grib:      gribtake(b);       break;
-                case colact_gulag:     togulag(b);        break;
-                case colact_instgulag: directly_gulag(b); break;
-                case colact_key:       keytake(b);        break;
-                case colact_door:      doorcol(b);        break;
+            if (b->isdoor) {
+                SDL_Rect body = { b->x - 2, b->y - 2, 36, 36 };
+                if (SDL_HasIntersection(&body, &box)) {
+                    switch (b->collision_act) {
+                    case colact_grib:      gribtake(b);       break;
+                    case colact_gulag:     togulag(b);        break;
+                    case colact_instgulag: directly_gulag(b); break;
+                    case colact_key:       keytake(b);        break;
+                    case colact_door:      doorcol(b);        break;
+                    }
+                }
+            } else {
+                SDL_Rect body = { 4 + b->x, 4 + b->y, 24, 24 };
+                if (SDL_HasIntersection(&body, &box)) {
+                    switch (b->collision_act) {
+                    case colact_grib:      gribtake(b);       break;
+                    case colact_gulag:     togulag(b);        break;
+                    case colact_instgulag: directly_gulag(b); break;
+                    case colact_key:       keytake(b);        break;
+                    case colact_door:      doorcol(b);        break;
+                    }
                 }
             }
         }

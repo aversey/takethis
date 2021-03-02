@@ -23,6 +23,7 @@ typedef struct tt_body {
     int collision_act;
     char *msg;
     int msglen;
+    int isdoor;
 } tt_body;
 
 

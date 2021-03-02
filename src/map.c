@@ -84,6 +84,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 1;
                 b->collision_act = 0;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == 'b') {
@@ -101,6 +102,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 1;
                 b->collision_act = 0;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == 'r') {
@@ -118,6 +120,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 1;
                 b->collision_act = 0;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == 'g') {
@@ -138,6 +141,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
                 b->collision_act = colact_grib;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == '^') {
@@ -156,6 +160,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
                 b->collision_act = 0;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == ';') {
@@ -174,6 +179,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 100;
                 b->collision_act = 0;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == '.') {
@@ -193,6 +199,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
                 b->collision_act = 0;
+                b->isdoor = 0;
                 b->msg = 0;
                 b->msglen = 0;
             } else if (type == '=') {
@@ -211,6 +218,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 100;
                 b->collision_act = 0;
+                b->isdoor = 0;
             } else if (type == 'k') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;
@@ -227,7 +235,8 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 1;
                 b->rate = 100;
                 b->collision_act = colact_key;
-            } else if (type == 'd') {
+                b->isdoor = 0;
+            } else if (type == 'd' || type == 'D') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;
                 r->bodies = realloc(r->bodies,
@@ -238,11 +247,29 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xrem = 0;
                 b->yrem = 0;
                 b->rem = 0;
-                b->txrrow = 4;
+                b->txrrow = 4 + (type == 'D');
                 b->txrcol = id;
                 b->anim = 1;
                 b->rate = 100;
                 b->collision_act = colact_door;
+                b->isdoor = 1;
+                r->walls[i][j] = malloc(sizeof(tt_body));
+                b = r->walls[i][j];
+                b->x = j * 32;
+                b->y = i * 32;
+                b->xrem = 0;
+                b->yrem = 0;
+                b->xvel = 0;
+                b->yvel = 0;
+                b->rem = 0;
+                b->txrrow = 0;
+                b->txrcol = 15;
+                b->anim = 1;
+                b->rate = 100;
+                b->collision_act = 0;
+                b->isdoor = 0;
+                b->msg = 0;
+                b->msglen = 0;
             } else if (type == '$') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;
@@ -259,6 +286,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->anim = 4;
                 b->rate = 100 + (rand() % 50 - 25);
                 b->collision_act = colact_gulag;
+                b->isdoor = 0;
             }
         }
         fgetc(f);
