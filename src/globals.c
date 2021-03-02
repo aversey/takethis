@@ -8,6 +8,8 @@ SDL_Texture *tttxr;
 
 SDL_Renderer *ttrdr;
 
+Mix_Chunk *ttcoin;
+Mix_Chunk *ttdoor;
 Mix_Music *grib;
 Mix_Music *ussr;
 Mix_Music *stalin;

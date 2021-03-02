@@ -297,6 +297,7 @@ static void togulag(tt_body *b)
     b->txrcol             = 15;
     b->msg                = 0;
     b->msglen             = 0;
+    Mix_PlayChannel(-1, ttcoin, 0);
     ttplayer.money++;
 }
 
@@ -322,6 +323,7 @@ static void keytake(tt_body *b)
     b->txrcol        = 15;
     b->msg           = 0;
     b->msglen        = 0;
+    Mix_PlayChannel(-1, ttcoin, 0);
 }
 
 static void doorcol(tt_body *b)
@@ -355,6 +357,7 @@ static void doorcol(tt_body *b)
         part->txrcol        = 15;
         part->msg           = 0;
         part->msglen        = 0;
+        Mix_PlayChannel(-1, ttdoor, 0);
     }
 }
 

@@ -22,6 +22,7 @@ int main(int argc, char **argv)
     TTF_Init();
     Mix_Init(MIX_INIT_OGG);
     Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096);
+    Mix_AllocateChannels(4);
     ttwdw  = SDL_CreateWindow("T A K E T H I S", SDL_WINDOWPOS_UNDEFINED,
                              SDL_WINDOWPOS_UNDEFINED, 950, 540, 0);
     ttrdr  = SDL_CreateRenderer(ttwdw, -1, SDL_RENDERER_ACCELERATED);
@@ -31,6 +32,8 @@ int main(int argc, char **argv)
     ussr   = Mix_LoadMUS("data/ussr.ogg");
     stalin = Mix_LoadMUS("data/stalin.ogg");
     lenin  = Mix_LoadMUS("data/lenin.ogg");
+    ttcoin = Mix_LoadWAV("data/coin.wav");
+    ttdoor = Mix_LoadWAV("data/door.wav");
     curmus = 0;
     tt_map_load();
 
