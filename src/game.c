@@ -161,6 +161,7 @@ static void save()
 static void load()
 {
     FILE *f     = fopen("save", "r");
+    if (!f) return;
     first_gulag = readnum(f);
     int c       = fgetc(f);
     if (c == 'g') {
