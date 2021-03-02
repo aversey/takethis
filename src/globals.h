@@ -1,13 +1,13 @@
 #ifndef TT_INCLUDED_GLOBALS
 #define TT_INCLUDED_GLOBALS
 
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-#include "room.h"
 #include "player.h"
+#include "room.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
+extern SDL_Window *ttwdw;
 
 extern TTF_Font *ttfont;
 
@@ -24,6 +24,5 @@ extern Mix_Music *curmus;
 extern tt_room ttmap[256];
 
 extern tt_player ttplayer;
-
 
 #endif

@@ -1,16 +1,14 @@
 #include "room.h"
 
-
 int tt_room_collide(tt_room *room, SDL_Rect *box)
 {
-    SDL_Rect r = { 0, 0, 32, 16 };
-    int i, j;
+    SDL_Rect r = {0, 0, 32, 16};
+    int      i, j;
     for (i = 0; i != TT_ROOM_H; ++i) {
         r.y = 32 * i;
         for (j = 0; j != TT_ROOM_W; ++j) {
             r.x = 32 * j;
-            if (SDL_HasIntersection(box, room->walls[i][j] ? &r : 0))
-                return 1;
+            if (SDL_HasIntersection(box, room->walls[i][j] ? &r : 0)) return 1;
         }
     }
     return 0;

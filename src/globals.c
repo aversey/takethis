@@ -1,5 +1,6 @@
 #include "globals.h"
 
+SDL_Window *ttwdw;
 
 TTF_Font *ttfont;
 
