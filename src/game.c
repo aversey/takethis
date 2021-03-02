@@ -396,21 +396,23 @@ static void step(int d)
                 b->xrem          = 0;
                 b->yrem          = 0;
                 b->rem           = 0;
-                b->txrrow        = 8;
-                b->txrcol        = rand() % 4;
                 b->anim          = 4;
                 b->collision_act = colact_instgulag;
                 b->msg           = 0;
                 b->msglen        = 0;
                 if (!lenin_until_hadouken) {
+                    b->txrrow        = 7;
+                    b->txrcol        = 2 + rand() % 2;
                     b->rate = 75 + (rand() % 50 - 25);
                     b->yvel = rand() % 100 - 50;
-                    b->yvel = b->yvel < 0 ? b->yvel - 150 : b->yvel + 150;
+                    b->yvel = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
                     b->xvel = rand() % 100 - 50;
-                    b->xvel = b->yvel < 0 ? b->yvel - 150 : b->yvel + 150;
+                    b->xvel = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
                     Mix_PlayChannel(-1, tthadouken, 0);
                     lenin_until_hadouken = 3;
                 } else {
+                    b->txrrow        = 8;
+                    b->txrcol        = rand() % 4;
                     b->rate = 150 + (rand() % 50 - 25);
                     b->yvel = rand() % 100 - 50;
                     b->yvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
