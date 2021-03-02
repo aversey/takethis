@@ -949,7 +949,8 @@ void changeroom(int out)
                 }
                 SDL_SetTextureAlphaMod(tttxr, 255);
                 SDL_SetRenderTarget(ttrdr, 0);
-                SDL_RenderCopy(ttrdr, lighttxr, 0, 0);
+                SDL_Rect dst = { 0, 0, 950, 540 };
+                SDL_RenderCopy(ttrdr, lighttxr, 0, &dst);
             }
         }
         {
@@ -1023,7 +1024,8 @@ void changeroom(int out)
                 }
                 SDL_SetTextureAlphaMod(tttxr, 255);
                 SDL_SetRenderTarget(ttrdr, 0);
-                SDL_RenderCopy(ttrdr, lighttxr, 0, 0);
+                SDL_Rect dst = { 0, 0, 950, 540 };
+                SDL_RenderCopy(ttrdr, lighttxr, 0, &dst);
             }
         }
         {
