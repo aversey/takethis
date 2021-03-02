@@ -23,18 +23,19 @@ int main(int argc, char **argv)
     Mix_Init(MIX_INIT_OGG);
     Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 4096);
     Mix_AllocateChannels(4);
-    ttwdw  = SDL_CreateWindow("T A K E T H I S", SDL_WINDOWPOS_UNDEFINED,
+    ttwdw   = SDL_CreateWindow("T A K E T H I S", SDL_WINDOWPOS_UNDEFINED,
                              SDL_WINDOWPOS_UNDEFINED, 950, 540, 0);
-    ttrdr  = SDL_CreateRenderer(ttwdw, -1, SDL_RENDERER_ACCELERATED);
-    tttxr  = loadtxr("data/txr.bmp");
-    ttfont = TTF_OpenFont("data/font.otf", 24);
-    grib   = Mix_LoadMUS("data/grib.ogg");
-    ussr   = Mix_LoadMUS("data/ussr.ogg");
-    stalin = Mix_LoadMUS("data/stalin.ogg");
-    lenin  = Mix_LoadMUS("data/lenin.ogg");
-    ttcoin = Mix_LoadWAV("data/coin.wav");
-    ttdoor = Mix_LoadWAV("data/door.wav");
-    curmus = 0;
+    ttrdr   = SDL_CreateRenderer(ttwdw, -1, SDL_RENDERER_ACCELERATED);
+    tttxr   = loadtxr("data/txr.bmp");
+    ttfont  = TTF_OpenFont("data/font.otf", 24);
+    grib    = Mix_LoadMUS("data/grib.ogg");
+    ussr    = Mix_LoadMUS("data/ussr.ogg");
+    stalin  = Mix_LoadMUS("data/stalin.ogg");
+    lenin   = Mix_LoadMUS("data/lenin.ogg");
+    ttcoin  = Mix_LoadWAV("data/coin.wav");
+    ttdoor  = Mix_LoadWAV("data/door.wav");
+    ttlenin = Mix_LoadWAV("data/lenin.wav");
+    curmus  = 0;
     tt_map_load();
 
     srand(time(0));
@@ -48,6 +49,9 @@ int main(int argc, char **argv)
     SDL_DestroyRenderer(ttrdr);
     SDL_DestroyWindow(ttwdw);
     Mix_HaltMusic();
+    Mix_FreeChunk(ttlenin);
+    Mix_FreeChunk(ttcoin);
+    Mix_FreeChunk(ttdoor);
     Mix_FreeMusic(lenin);
     Mix_FreeMusic(stalin);
     Mix_FreeMusic(ussr);

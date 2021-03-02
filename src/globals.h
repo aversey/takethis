@@ -15,6 +15,7 @@ extern SDL_Texture *tttxr;
 
 extern SDL_Renderer *ttrdr;
 
+extern Mix_Chunk *ttlenin;
 extern Mix_Chunk *ttcoin;
 extern Mix_Chunk *ttdoor;
 extern Mix_Music *grib;

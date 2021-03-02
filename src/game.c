@@ -160,7 +160,7 @@ static void save()
 
 static void load()
 {
-    FILE *f     = fopen("save", "r");
+    FILE *f = fopen("save", "r");
     if (!f) return;
     first_gulag = readnum(f);
     int c       = fgetc(f);
@@ -402,6 +402,7 @@ static void step(int d)
                 b->yvel          = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
                 b->xvel          = rand() % 100 - 50;
                 b->xvel          = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+                Mix_PlayChannel(-1, ttlenin, 0);
             }
         } else if (lenin_grib)
             lenin_grib = 0;
