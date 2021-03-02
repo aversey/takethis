@@ -5,9 +5,11 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
-int magic       = 0;
-int first_gulag = 1;
-int fullscreen  = 0;
+int        magic                = 0;
+static int first_gulag          = 1;
+static int fullscreen           = 0;
+static int lenin_grib           = 0;
+static int lenin_until_hadouken = 3;
 
 static int ticks;
 
@@ -66,6 +68,8 @@ static void save()
 {
     FILE *f = fopen("save", "w");
     outnum(f, first_gulag);
+    outnum(f, lenin_grib);
+    outnum(f, lenin_until_hadouken);
     if (curmus == grib) fputs("g\n", f);
     else if (curmus == ussr)
         fputs("u\n", f);
@@ -162,8 +166,10 @@ static void load()
 {
     FILE *f = fopen("save", "r");
     if (!f) return;
-    first_gulag = readnum(f);
-    int c       = fgetc(f);
+    first_gulag          = readnum(f);
+    lenin_grib           = readnum(f);
+    lenin_until_hadouken = readnum(f);
+    int c                = fgetc(f);
     if (c == 'g') {
         if (curmus != grib) {
             curmus = grib;
@@ -376,7 +382,6 @@ static void step(int d)
             ttplayer.lenin_pos = oldpos;
             ttplayer.lenin_vel *= -1;
         }
-        static int lenin_grib = 0;
         if (ttplayer.lenin_rem % 1000 > 500) {
             if (!lenin_grib) {
                 lenin_grib = 1;
@@ -394,15 +399,26 @@ static void step(int d)
                 b->txrrow        = 8;
                 b->txrcol        = rand() % 4;
                 b->anim          = 4;
-                b->rate          = 150 + (rand() % 50 - 25);
                 b->collision_act = colact_instgulag;
                 b->msg           = 0;
                 b->msglen        = 0;
-                b->yvel          = rand() % 100 - 50;
-                b->yvel          = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
-                b->xvel          = rand() % 100 - 50;
-                b->xvel          = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
-                Mix_PlayChannel(-1, ttlenin, 0);
+                if (!lenin_until_hadouken) {
+                    b->rate = 75 + (rand() % 50 - 25);
+                    b->yvel = rand() % 100 - 50;
+                    b->yvel = b->yvel < 0 ? b->yvel - 100 : b->yvel + 100;
+                    b->xvel = rand() % 100 - 50;
+                    b->xvel = b->yvel < 0 ? b->yvel - 100 : b->yvel + 100;
+                    Mix_PlayChannel(-1, tthadouken, 0);
+                    lenin_until_hadouken = 3;
+                } else {
+                    b->rate = 150 + (rand() % 50 - 25);
+                    b->yvel = rand() % 100 - 50;
+                    b->yvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+                    b->xvel = rand() % 100 - 50;
+                    b->xvel = b->yvel < 0 ? b->yvel - 50 : b->yvel + 50;
+                    Mix_PlayChannel(-1, ttlenin, 0);
+                    lenin_until_hadouken--;
+                }
             }
         } else if (lenin_grib)
             lenin_grib = 0;

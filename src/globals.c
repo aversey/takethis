@@ -8,6 +8,7 @@ SDL_Texture *tttxr;
 
 SDL_Renderer *ttrdr;
 
+Mix_Chunk *tthadouken;
 Mix_Chunk *ttlenin;
 Mix_Chunk *ttcoin;
 Mix_Chunk *ttdoor;
