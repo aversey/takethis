@@ -19,6 +19,7 @@ extern Mix_Music *grib;
 extern Mix_Music *ussr;
 extern Mix_Music *stalin;
 extern Mix_Music *lenin;
+extern Mix_Music *curmus;
 
 extern tt_room ttmap[256];
 

@@ -1,12 +1,266 @@
 #include "game.h"
 
 #include <SDL2/SDL.h>
+#include <stdio.h>
+#include "map.h"
 #include "globals.h"
 
 
 int magic = 0;
 
 static int ticks;
+
+static char *readline(FILE *f)
+{
+    int c = fgetc(f);
+    char *res = 0;
+    int reslen = 0;
+    while (c != EOF && c != '\n') {
+        ++reslen;
+        res = realloc(res, reslen + 1);
+        res[reslen - 1] = c;
+        c = fgetc(f);
+    }
+    res[reslen] = 0;
+    return res;
+}
+
+static void outnum(FILE *f, int n)
+{
+    if (n) {
+        if (n < 0) {
+            fputc('-', f);
+            n *= -1;
+        }
+        int pos = 1;
+        while (n / pos) pos *= 10;
+        if (pos > 1) pos /= 10;
+        while (pos) {
+            fputc('0' + n / pos, f);
+            n = n % pos;
+            pos /= 10;
+        }
+    }
+    fputc('\n', f);
+}
+
+static int readnum(FILE *f)
+{
+    int sign = 1;
+    int n = 0;
+    int c = fgetc(f);
+    if (c == '-') {
+        sign = -1;
+        c = fgetc(f);
+    }
+    while (c != EOF && c != '\n') {
+        n *= 10;
+        n += c - '0';
+        c = fgetc(f);
+    }
+    return sign * n;
+}
+
+static void save()
+{
+    FILE *f = fopen("save", "w");
+    if (curmus == grib)        fputs("g\n", f);
+    else if (curmus == ussr)   fputs("u\n", f);
+    else if (curmus == stalin) fputs("s\n", f);
+    else if (curmus == lenin)  fputs("l\n", f);
+    else                       fputs("0\n", f);
+    fputc(ttplayer.room - ttmap, f);
+    fputc('\n', f);
+    outnum(f, ttplayer.x);
+    outnum(f, ttplayer.y);
+    outnum(f, ttplayer.xrem);
+    outnum(f, ttplayer.yrem);
+    outnum(f, ttplayer.variant);
+    outnum(f, ttplayer.rem);
+    outnum(f, ttplayer.money);
+    outnum(f, ttplayer.keys[0]);
+    outnum(f, ttplayer.keys[1]);
+    outnum(f, ttplayer.tobein_gulag);
+    outnum(f, ttplayer.until_gulag);
+    outnum(f, ttplayer.lenin_pos);
+    outnum(f, ttplayer.lenin_pos_rem);
+    outnum(f, ttplayer.lenin_vel);
+    outnum(f, ttplayer.zhiv_lenin);
+    outnum(f, ttplayer.lenin_rem);
+    int i;
+    for (i = '0'; i != '~'; ++i) {
+        int p, q;
+        for (p = 0; p != TT_ROOM_H; ++p) {
+            for (q = 0; q != TT_ROOM_W; ++q) {
+                SDL_Rect *r = ttmap[i].floor[p][q];
+                if (r) {
+                    fputs("1\n", f);
+                    outnum(f, r->x);
+                    outnum(f, r->y);
+                    outnum(f, r->w);
+                    outnum(f, r->h);
+                } else fputc('\n', f);
+                tt_body *w = ttmap[i].walls[p][q];
+                if (w) {
+                    fputs("1\n", f);
+                    outnum(f, w->x);
+                    outnum(f, w->y);
+                    outnum(f, w->xrem);
+                    outnum(f, w->yrem);
+                    outnum(f, w->xvel);
+                    outnum(f, w->yvel);
+                    outnum(f, w->txrrow);
+                    outnum(f, w->txrcol);
+                    outnum(f, w->rem);
+                    outnum(f, w->anim);
+                    outnum(f, w->rate);
+                    outnum(f, w->collision_act);
+                    outnum(f, w->msglen);
+                    if (w->msg) fputs(w->msg, f);
+                    fputc('\n', f);
+                } else fputc('\n', f);
+            }
+        }
+        outnum(f, ttmap[i].bodies_count);
+        for (p = 0; p != ttmap[i].bodies_count; ++p) {
+            tt_body *b = ttmap[i].bodies + p;
+            outnum(f, b->x);
+            outnum(f, b->y);
+            outnum(f, b->xrem);
+            outnum(f, b->yrem);
+            outnum(f, b->xvel);
+            outnum(f, b->yvel);
+            outnum(f, b->txrrow);
+            outnum(f, b->txrcol);
+            outnum(f, b->rem);
+            outnum(f, b->anim);
+            outnum(f, b->rate);
+            outnum(f, b->collision_act);
+            outnum(f, b->msglen);
+            if (b->msg) fputs(b->msg, f);
+            fputc('\n', f);
+        }
+        fputc(ttmap[i].neighbours[0] - ttmap, f);
+        fputc(ttmap[i].neighbours[1] - ttmap, f);
+        fputc(ttmap[i].neighbours[2] - ttmap, f);
+        fputc(ttmap[i].neighbours[3] - ttmap, f);
+        fputc('\n', f);
+    }
+}
+
+static void load()
+{
+    FILE *f = fopen("save", "r");
+    int c = fgetc(f);
+    if (c == 'g') {
+        if (curmus != grib) {
+            curmus = grib;
+            Mix_PlayMusic(grib, -1);
+        }
+    } else if (c == 'u') {
+        if (curmus != ussr) {
+            curmus = ussr;
+            Mix_PlayMusic(ussr, -1);
+        }
+    } else if (c == 's') {
+        if (curmus != stalin) {
+            curmus = stalin;
+            Mix_PlayMusic(stalin, -1);
+        }
+    } else if (c == 'l') {
+        if (curmus != lenin) {
+            curmus = lenin;
+            Mix_PlayMusic(lenin, -1);
+        }
+    } else {
+        curmus = 0;
+        Mix_PauseMusic();
+    }
+    fgetc(f);
+    ttplayer.room = ttmap + fgetc(f);
+    fgetc(f);
+    ttplayer.x = readnum(f);
+    ttplayer.y = readnum(f);
+    ttplayer.xrem = readnum(f);
+    ttplayer.yrem = readnum(f);
+    ttplayer.variant = readnum(f);
+    ttplayer.rem = readnum(f);
+    ttplayer.money = readnum(f);
+    ttplayer.keys[0] = readnum(f);
+    ttplayer.keys[1] = readnum(f);
+    ttplayer.tobein_gulag = readnum(f);
+    ttplayer.until_gulag = readnum(f);
+    ttplayer.lenin_pos = readnum(f);
+    ttplayer.lenin_pos_rem = readnum(f);
+    ttplayer.lenin_vel = readnum(f);
+    ttplayer.zhiv_lenin = readnum(f);
+    ttplayer.lenin_rem = readnum(f);
+    tt_map_free();
+    int i;
+    for (i = '0'; i != '~'; ++i) {
+        int p, q;
+        for (p = 0; p != TT_ROOM_H; ++p) {
+            for (q = 0; q != TT_ROOM_W; ++q) {
+                if (readnum(f)) {
+                    ttmap[i].floor[p][q] = malloc(sizeof(SDL_Rect));
+                    ttmap[i].floor[p][q]->x = readnum(f);
+                    ttmap[i].floor[p][q]->y = readnum(f);
+                    ttmap[i].floor[p][q]->w = readnum(f);
+                    ttmap[i].floor[p][q]->h = readnum(f);
+                } else ttmap[i].floor[p][q] = 0;
+                if (readnum(f)) {
+                    tt_body *b = ttmap[i].walls[p][q] = malloc(sizeof(*b));
+                    b->x = readnum(f);
+                    b->y = readnum(f);
+                    b->xrem = readnum(f);
+                    b->yrem = readnum(f);
+                    b->xvel = readnum(f);
+                    b->yvel = readnum(f);
+                    b->txrrow = readnum(f);
+                    b->txrcol = readnum(f);
+                    b->rem = readnum(f);
+                    b->anim = readnum(f);
+                    b->rate = readnum(f);
+                    b->collision_act = readnum(f);
+                    b->msglen = readnum(f);
+                    if (b->msglen) b->msg = readline(f);
+                    else {
+                        b->msg = 0;
+                        fgetc(f);
+                    }
+                } else ttmap[i].walls[p][q] = 0;
+            }
+        }
+        ttmap[i].bodies_count = readnum(f);
+        ttmap[i].bodies = malloc(ttmap[i].bodies_count * sizeof(tt_body));
+        for (p = 0; p != ttmap[i].bodies_count; ++p) {
+            tt_body *b = ttmap[i].bodies + p;
+            b->x = readnum(f);
+            b->y = readnum(f);
+            b->xrem = readnum(f);
+            b->yrem = readnum(f);
+            b->xvel = readnum(f);
+            b->yvel = readnum(f);
+            b->txrrow = readnum(f);
+            b->txrcol = readnum(f);
+            b->rem = readnum(f);
+            b->anim = readnum(f);
+            b->rate = readnum(f);
+            b->collision_act = readnum(f);
+            b->msglen = readnum(f);
+            if (b->msglen) b->msg = readline(f);
+            else {
+                b->msg = 0;
+                fgetc(f);
+            }
+        }
+        ttmap[i].neighbours[0] = ttmap + fgetc(f);
+        ttmap[i].neighbours[1] = ttmap + fgetc(f);
+        ttmap[i].neighbours[2] = ttmap + fgetc(f);
+        ttmap[i].neighbours[3] = ttmap + fgetc(f);
+        fgetc(f);
+    }
+}
 
 static const char *gulagmsg = "          GULAG HAS YOU";
 
@@ -15,6 +269,32 @@ static void directly_gulag(tt_body *b)
     gulagmsg = " Communism is Indestructable";
     magic = tt_gotogulag;
     Mix_PlayMusic(ussr, -1);
+    curmus = ussr;
+}
+
+static void togulag(tt_body *b)
+{
+    ttplayer.tobein_gulag = 1;
+    b->collision_act = 0;
+    b->anim = 1;
+    b->txrrow = 0;
+    b->txrcol = 15;
+    b->msg = 0;
+    b->msglen = 0;
+}
+
+static void gribtake(tt_body *b)
+{
+    curmus = grib;
+    Mix_PlayMusic(grib, -1);
+    b->collision_act = 0;
+    b->anim = 1;
+    b->txrrow = 0;
+    b->txrcol = 15;
+    b->msg = 0;
+    b->msglen = 0;
+    ttplayer.variant = 1;
+    magic = tt_gotofirstroom;
 }
 
 static void step(int d)
@@ -54,7 +334,7 @@ static void step(int d)
                 b->txrcol = rand() % 4;
                 b->anim = 4;
                 b->rate = 150 + (rand() % 50 - 25);
-                b->collision_act = directly_gulag;
+                b->collision_act = colact_instgulag;
                 b->msg = 0;
                 b->msglen = 0;
                 b->yvel = rand() % 100 - 50;
@@ -69,11 +349,13 @@ static void step(int d)
         if (first_gulag) {
             first_gulag = 0;
             Mix_PlayMusic(stalin, -1);
+            curmus = stalin;
         }
         ttplayer.until_gulag -= d;
         if (ttplayer.until_gulag <= 0) {
             magic = tt_gotogulag;
             Mix_PlayMusic(ussr, -1);
+            curmus = ussr;
         }
     }
     if (xw && yw) {
@@ -95,6 +377,7 @@ static void step(int d)
         if (out) {
             if (ttplayer.room->neighbours[out - 1] == ttmap + 'L') {
                 Mix_PauseMusic();
+                curmus = 0;
                 magic = tt_mausoleum;
             } else {
                 magic = tt_changeroom + out - 1;
@@ -115,7 +398,13 @@ static void step(int d)
         for (i = 0; i != ttplayer.room->bodies_count; ++i) {
             tt_body *b = ttplayer.room->bodies + i;
             SDL_Rect body = { 4 + b->x, 4 + b->y, 24, 24 };
-            if (SDL_HasIntersection(&body, &box)) b->collision_act(b);
+            if (SDL_HasIntersection(&body, &box)) {
+                switch (b->collision_act) {
+                case colact_grib:      gribtake(b);       break;
+                case colact_gulag:     togulag(b);      break;
+                case colact_instgulag: directly_gulag(b); break;
+                }
+            }
         }
     }
 }
@@ -326,6 +615,7 @@ static void mausoleum()
     ticks = newticks;
     newticks = SDL_GetTicks();
     Mix_PlayMusic(lenin, -1);
+    curmus = lenin;
     while (!q && newticks < ticks + 14300) {
         int delta = newticks - ticks;
         SDL_Event e;
@@ -561,6 +851,8 @@ void tt_mainloop()
                 else if (code == SDL_SCANCODE_RIGHT) arrr = 1;
                 else if (code == SDL_SCANCODE_DOWN)  arrd = 1;
                 else if (code == SDL_SCANCODE_LEFT)  arrl = 1;
+                else if (code == SDL_SCANCODE_F5)    save();
+                else if (code == SDL_SCANCODE_F6)    load();
             } else if (e.type == SDL_KEYUP) {
                 int code = e.key.keysym.scancode;
                 if (code == SDL_SCANCODE_W)          keyw = 0;

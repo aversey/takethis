@@ -2,6 +2,8 @@
 #define TT_INCLUDED_BODY
 
 
+enum { colact_grib = 1, colact_gulag, colact_instgulag };
+
 typedef struct tt_body {
     int x;
     int y;
@@ -14,7 +16,7 @@ typedef struct tt_body {
     int rem;
     int anim;
     int rate;
-    void (*collision_act)(struct tt_body *b);
+    int collision_act;
     char *msg;
     int msglen;
 } tt_body;

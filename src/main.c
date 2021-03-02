@@ -34,6 +34,7 @@ int main(int argc, char **argv)
     ussr = Mix_LoadMUS("data/ussr.ogg");
     stalin = Mix_LoadMUS("data/stalin.ogg");
     lenin = Mix_LoadMUS("data/lenin.ogg");
+    curmus = 0;
     tt_map_load();
 
     srand(time(0));

@@ -16,8 +16,7 @@ typedef struct tt_player {
     int variant;
     int rem;
     int money;
-    int keys;
-    int the_key;
+    int keys[2];
     int tobein_gulag;
     int until_gulag;
 
