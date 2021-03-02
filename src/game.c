@@ -405,9 +405,9 @@ static void step(int d)
                 if (!lenin_until_hadouken) {
                     b->rate = 75 + (rand() % 50 - 25);
                     b->yvel = rand() % 100 - 50;
-                    b->yvel = b->yvel < 0 ? b->yvel - 100 : b->yvel + 100;
+                    b->yvel = b->yvel < 0 ? b->yvel - 150 : b->yvel + 150;
                     b->xvel = rand() % 100 - 50;
-                    b->xvel = b->yvel < 0 ? b->yvel - 100 : b->yvel + 100;
+                    b->xvel = b->yvel < 0 ? b->yvel - 150 : b->yvel + 150;
                     Mix_PlayChannel(-1, tthadouken, 0);
                     lenin_until_hadouken = 3;
                 } else {
