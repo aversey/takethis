@@ -404,9 +404,9 @@ static void step(int d)
                     b->txrrow        = 7;
                     b->txrcol        = 2 + rand() % 2;
                     b->rate = 75 + (rand() % 50 - 25);
-                    b->yvel = rand() % 100 - 50;
+                    b->yvel = rand() % 50 - 25;
                     b->yvel = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
-                    b->xvel = rand() % 100 - 50;
+                    b->xvel = rand() % 50 - 25;
                     b->xvel = b->yvel < 0 ? b->yvel - 125 : b->yvel + 125;
                     Mix_PlayChannel(-1, tthadouken, 0);
                     lenin_until_hadouken = 3;
