@@ -811,6 +811,7 @@ static void mausoleum()
         SDL_RenderPresent(ttrdr);
         newticks = SDL_GetTicks();
     }
+    lenin_size          = 0;
     ttplayer.lenin_zhiv = 1;
     magic               = 0;
     ticks               = SDL_GetTicks();
