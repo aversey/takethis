@@ -161,13 +161,13 @@ void tt_player_draw()
             SDL_SetTextureColorMod(tttxr, 255, 0, 0);
             SDL_RenderCopy(ttrdr, tttxr, &src, &d);
         }
-        if (curmus == lenin || ttplayer.room == ttmap + 'G') {
+        if (ttplayer.variant) {
             SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
             SDL_Rect d   = { ttplayer.x - 32, ttplayer.y - 32, 128, 128 };
-            SDL_SetTextureColorMod(tttxr, 255, 255, 255);
+            SDL_SetTextureColorMod(tttxr, 255, 0, 0);
             SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-            if (curmus == lenin) SDL_SetTextureAlphaMod(tttxr, 16);
         }
+        if (curmus == lenin) SDL_SetTextureAlphaMod(tttxr, 16);
         int j;
         for (i = 0; i != TT_ROOM_H; ++i) {
             for (j = 0; j != TT_ROOM_W; ++j) {

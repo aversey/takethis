@@ -284,7 +284,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->txrcol        = id;
                 b->anim          = 4;
                 b->rate          = 100 + (rand() % 50 - 25);
-                b->collision_act = colact_gulag;
+                b->collision_act = /*colact_gulag*/ 0;
                 b->isdoor        = 0;
             }
         }

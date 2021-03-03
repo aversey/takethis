@@ -1196,11 +1196,11 @@ void changeroom(int out)
                     SDL_SetTextureColorMod(tttxr, 255, 0, 0);
                     SDL_RenderCopy(ttrdr, tttxr, &src, &d);
                 }
-                if (ttplayer.room == ttmap + 'G') {
+                if (ttplayer.variant) {
                     SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                     SDL_Rect d   = { ttplayer.x - 32, ttplayer.y - 21, 128,
                                    128 };
-                    SDL_SetTextureColorMod(tttxr, 255, 255, 255);
+                    SDL_SetTextureColorMod(tttxr, 255, 0, 0);
                     SDL_RenderCopy(ttrdr, tttxr, &src, &d);
                 }
                 SDL_SetTextureColorMod(tttxr, 255, 255, 255);
