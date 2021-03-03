@@ -903,17 +903,6 @@ void changeroom(int out)
                 SDL_Rect d = { 14 + b->x + fullx + transx,
                                14 + b->y + fully + transy, 32, 32 };
                 SDL_RenderCopy(ttrdr, tttxr, &s, &d);
-                if (b->msg) {
-                    SDL_Color    c = { 255, 255, 255, 255 };
-                    SDL_Surface *s =
-                        TTF_RenderText_Blended(ttfont, b->msg, c);
-                    SDL_Texture *t   = SDL_CreateTextureFromSurface(ttrdr, s);
-                    SDL_Rect     dst = { 50 + b->x + fullx + transx,
-                                     20 + b->y + fully + transy, s->w, s->h };
-                    SDL_RenderCopy(ttrdr, t, 0, &dst);
-                    SDL_DestroyTexture(t);
-                    SDL_FreeSurface(s);
-                }
             }
         }
         {
@@ -945,17 +934,6 @@ void changeroom(int out)
                 SDL_Rect d = { 14 + b->x + transx, 14 + b->y + transy, 32,
                                32 };
                 SDL_RenderCopy(ttrdr, tttxr, &s, &d);
-                if (b->msg) {
-                    SDL_Color    c = { 255, 255, 255, 255 };
-                    SDL_Surface *s =
-                        TTF_RenderText_Blended(ttfont, b->msg, c);
-                    SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
-                    SDL_Rect dst   = { 50 + b->x + transx, 20 + b->y + transy,
-                                     s->w, s->h };
-                    SDL_RenderCopy(ttrdr, t, 0, &dst);
-                    SDL_DestroyTexture(t);
-                    SDL_FreeSurface(s);
-                }
             }
 
             SDL_Rect d   = { 14 + ttplayer.x + transx + playx,
@@ -1211,6 +1189,35 @@ void changeroom(int out)
                 SDL_RenderCopy(ttrdr, lighttxr, 0, &dst);
                 SDL_SetTextureBlendMode(tttxr, bm);
                 SDL_SetRenderDrawColor(ttrdr, 0, 0, 0, 255);
+            }
+            for (i = 0; i != r->bodies_count; ++i) {
+                tt_body *b = r->bodies + i;
+                if (b->msg) {
+                    SDL_Color    c = { 255, 255, 255, 255 };
+                    SDL_Surface *s =
+                        TTF_RenderText_Blended(ttfont, b->msg, c);
+                    SDL_Texture *t   = SDL_CreateTextureFromSurface(ttrdr, s);
+                    SDL_Rect     dst = { 50 + b->x + fullx + transx,
+                                     20 + b->y + fully + transy, s->w, s->h };
+                    SDL_RenderCopy(ttrdr, t, 0, &dst);
+                    SDL_DestroyTexture(t);
+                    SDL_FreeSurface(s);
+                }
+            }
+            r = ttplayer.room;
+            for (i = 0; i != r->bodies_count; ++i) {
+                tt_body *b = r->bodies + i;
+                if (b->msg) {
+                    SDL_Color    c = { 255, 255, 255, 255 };
+                    SDL_Surface *s =
+                        TTF_RenderText_Blended(ttfont, b->msg, c);
+                    SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+                    SDL_Rect dst   = { 50 + b->x + transx, 20 + b->y + transy,
+                                     s->w, s->h };
+                    SDL_RenderCopy(ttrdr, t, 0, &dst);
+                    SDL_DestroyTexture(t);
+                    SDL_FreeSurface(s);
+                }
             }
         }
         {
