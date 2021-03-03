@@ -84,23 +84,134 @@ void tt_player_draw()
         SDL_RenderCopy(ttrdr, tttxr, &s, &d);
     }
 
+    if (!ttplayer.lenin_zhiv && curmus == lenin) {
+        {
+            SDL_Rect src = { 32, 16 * 12 + 4, 32, lenin_size };
+            SDL_Rect dst = { 14 + ttplayer.lenin_pos,
+                             14 + 32 + 96 - 8 - lenin_size * 2, 64,
+                             lenin_size * 2 };
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+        }
+        {
+            SDL_Rect src = { 96, 16 * 12, 64, 48 };
+            SDL_Rect dst = { 14 + ttplayer.lenin_pos - 32, 110, 128, 96 };
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
+        }
+    }
+
     {
         SDL_BlendMode bm;
         SDL_GetTextureBlendMode(tttxr, &bm);
         SDL_SetTextureBlendMode(tttxr, SDL_BLENDMODE_ADD);
         SDL_SetTextureAlphaMod(tttxr, 64);
         SDL_SetRenderTarget(ttrdr, lighttxr);
-        SDL_SetRenderDrawColor(ttrdr, 192, 192, 192, 255);
+        if (!ttplayer.lenin_zhiv && curmus == lenin) {
+            SDL_SetRenderDrawColor(ttrdr, 64, 64, 64, 255);
+            SDL_SetTextureAlphaMod(tttxr, 32);
+        } else
+            SDL_SetRenderDrawColor(ttrdr, 192, 192, 192, 255);
         SDL_RenderClear(ttrdr);
         int i;
         for (i = 0; i != r->bodies_count; ++i) {
             tt_body *b = r->bodies + i;
-            if ((7 == b->txrrow && b->txrcol <= 7) || b->txrrow == 11) {
+            if ((7 == b->txrrow && b->txrcol <= 1) || b->txrrow == 11) {
                 SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
-                SDL_Rect d   = { b->x - 16, b->y - 16, 96, 96 };
+                SDL_Rect d   = { b->x - 32, b->y - 32, 128, 128 };
                 SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                 SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+            } else if (7 == b->txrrow && b->txrcol >= 1) {
+                SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                SDL_Rect d   = { b->x - 32, b->y - 32, 128, 128 };
+                SDL_SetTextureColorMod(tttxr, 255, 0, 0);
+                SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+            } else if (8 == b->txrrow) {
+                SDL_Rect src   = { 16 * 14, 16 * 12, 32, 32 };
+                SDL_Rect d     = { b->x - 32, b->y - 32, 128, 128 };
+                double   color = (unsigned)b->rem * b->rate % 360000;
+                color /= 1000;
+                int r, g, b;
+                if (color < 60) {
+                    r = 255;
+                    g = color * 255 / 60;
+                    b = 0;
+                } else if (color < 120) {
+                    r = 255 + (60 - color) * 255 / 60;
+                    g = 255;
+                    b = 0;
+                } else if (color < 180) {
+                    r = 0;
+                    g = 255;
+                    b = (color - 120) * 255 / 60;
+                } else if (color < 240) {
+                    r = 0;
+                    g = 255 + (180 - color) * 255 / 60;
+                    b = 255;
+                } else if (color < 300) {
+                    r = (color - 240) * 255 / 60;
+                    g = 0;
+                    b = 255;
+                } else {
+                    r = 255;
+                    b = 255 + (300 - color) * 255 / 60;
+                    g = 0;
+                }
+                SDL_SetTextureColorMod(tttxr, r, g, b);
+                SDL_RenderCopy(ttrdr, tttxr, &src, &d);
             }
+        }
+        int j;
+        for (i = 0; i != TT_ROOM_H; ++i) {
+            for (j = 0; j != TT_ROOM_W; ++j) {
+                tt_body *b = r->walls[i][j];
+                if (!b) continue;
+                if (9 == b->txrrow) {
+                    SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                    SDL_Rect d   = { b->x - 32, b->y - 32, 128, 128 };
+                    SDL_SetTextureColorMod(tttxr, 255, 215, 0);
+                    SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                } else if (8 == b->txrrow) {
+                    SDL_Rect src   = { 16 * 14, 16 * 12, 32, 32 };
+                    SDL_Rect d     = { b->x - 32, b->y - 32, 128, 128 };
+                    double   color = (unsigned)b->rem * b->rate % 360000;
+                    color /= 1000;
+                    int r, g, b;
+                    if (color < 60) {
+                        r = 255;
+                        g = color * 255 / 60;
+                        b = 0;
+                    } else if (color < 120) {
+                        r = 255 + (60 - color) * 255 / 60;
+                        g = 255;
+                        b = 0;
+                    } else if (color < 180) {
+                        r = 0;
+                        g = 255;
+                        b = (color - 120) * 255 / 60;
+                    } else if (color < 240) {
+                        r = 0;
+                        g = 255 + (180 - color) * 255 / 60;
+                        b = 255;
+                    } else if (color < 300) {
+                        r = (color - 240) * 255 / 60;
+                        g = 0;
+                        b = 255;
+                    } else {
+                        r = 255;
+                        b = 255 + (300 - color) * 255 / 60;
+                        g = 0;
+                    }
+                    SDL_SetTextureColorMod(tttxr, r, g, b);
+                    SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                }
+            }
+        }
+        if (ttplayer.lenin_zhiv || curmus == lenin) {
+            SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+            SDL_Rect dst = { 14 + ttplayer.lenin_pos - 96,
+                             14 + 32 + 96 - 8 - 38 * 4, 256, 256 };
+            SDL_SetTextureColorMod(tttxr, 255, 0, 0);
+            if (!ttplayer.lenin_zhiv) { SDL_SetTextureAlphaMod(tttxr, 196); }
+            SDL_RenderCopy(ttrdr, tttxr, &src, &dst);
         }
         SDL_SetTextureColorMod(tttxr, 255, 255, 255);
         SDL_SetTextureAlphaMod(tttxr, 255);

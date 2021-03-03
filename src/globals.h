@@ -11,6 +11,8 @@ extern SDL_Window *ttwdw;
 
 extern TTF_Font *ttfont;
 
+extern int lenin_size;
+
 extern SDL_Texture *tttxr;
 extern SDL_Texture *lighttxr;
 

@@ -14,7 +14,7 @@ CFLAGS   = -xc -ansi -Wall
 ifeq '$(DEBUG)' 'yes'
 CFLAGS  += -g -O0
 else
-CFLAGS  += -O3
+CFLAGS  += -O2
 endif
 # Use SDL:
 LFLAGS   = -lSDL2 -lSDL2_ttf -lSDL2_mixer -lm
