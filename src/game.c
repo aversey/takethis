@@ -3,8 +3,8 @@
 #include "globals.h"
 #include "map.h"
 #include <SDL2/SDL.h>
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 int        magic                = 0;
 int        lenin_size           = 0;
