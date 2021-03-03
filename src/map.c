@@ -29,7 +29,10 @@ static SDL_Rect *newtile(int row, int col)
 
 static void loadroom(tt_room *r, FILE *f)
 {
-    int default_floor_id = fgetc(f) - '0';
+    int default_floor_id = fgetc(f);
+    if (default_floor_id < 'a') default_floor_id -= '0';
+    else
+        default_floor_id = default_floor_id - 'a' + 10;
     fgetc(f);
     int i, j;
     for (i = 0; i != 4; ++i) r->neighbours[i] = ttmap + fgetc(f);

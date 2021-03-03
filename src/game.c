@@ -4,6 +4,7 @@
 #include "map.h"
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <math.h>
 
 int        magic                = 0;
 int        lenin_size           = 0;
@@ -986,7 +987,7 @@ void changeroom(int out)
                 for (i = 0; i != r->bodies_count; ++i) {
                     tt_body *b = r->bodies + i;
                     if ((6 == b->txrrow && b->txrcol <= 1) ||
-                        b->txrrow == 11) {
+                        b->txrrow == 10) {
                         SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d   = { b->x + fullx + transx - 32,
                                        b->y + fully + transy - 32, 128, 128 };

@@ -104,7 +104,7 @@ void tt_player_draw()
         int i;
         for (i = 0; i != r->bodies_count; ++i) {
             tt_body *b = r->bodies + i;
-            if ((6 == b->txrrow && b->txrcol <= 1) || b->txrrow == 11) {
+            if ((6 == b->txrrow && b->txrcol <= 1) || b->txrrow == 10) {
                 SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                 SDL_Rect d   = { b->x - 32, b->y - 32, 128, 128 };
                 SDL_SetTextureColorMod(tttxr, 255, 255, 255);
