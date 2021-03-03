@@ -135,7 +135,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel          = 0;
                 b->yvel          = 0;
                 b->rem           = 0;
-                b->txrrow        = 8;
+                b->txrrow        = 7;
                 b->txrcol        = id;
                 b->anim          = 4;
                 b->rate          = 150 + (rand() % 50 - 25);
@@ -154,7 +154,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel          = 0;
                 b->yvel          = 0;
                 b->rem           = 0;
-                b->txrrow        = 8;
+                b->txrrow        = 7;
                 b->txrcol        = id;
                 b->anim          = 4;
                 b->rate          = 150 + (rand() % 50 - 25);
@@ -173,7 +173,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel          = 0;
                 b->yvel          = 0;
                 b->rem           = 0;
-                b->txrrow        = 10;
+                b->txrrow        = 9;
                 b->txrcol        = id;
                 b->anim          = 1;
                 b->rate          = 100;
@@ -193,7 +193,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xvel          = 0;
                 b->yvel          = 0;
                 b->rem           = 0;
-                b->txrrow        = 9;
+                b->txrrow        = 8;
                 b->txrcol        = id;
                 b->anim          = 4;
                 b->rate          = 150 + (rand() % 50 - 25);
@@ -218,7 +218,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->rate          = 100;
                 b->collision_act = 0;
                 b->isdoor        = 0;
-            } else if (type == 'k') {
+            } else if (type == 'k' || type == 'K') {
                 r->floor[i][j] = newtile(0, default_floor_id);
                 r->bodies_count++;
                 r->bodies =
@@ -229,8 +229,8 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xrem          = 0;
                 b->yrem          = 0;
                 b->rem           = 0;
-                b->txrrow        = 11;
-                b->txrcol        = id;
+                b->txrrow        = 10;
+                b->txrcol        = id + (type == 'K');
                 b->anim          = 1;
                 b->rate          = 100;
                 b->collision_act = colact_key;
@@ -246,8 +246,8 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xrem          = 0;
                 b->yrem          = 0;
                 b->rem           = 0;
-                b->txrrow        = 4 + (type == 'D');
-                b->txrcol        = id;
+                b->txrrow        = 4;
+                b->txrcol        = id + 8 * (type == 'D');
                 b->anim          = 1;
                 b->rate          = 100;
                 b->collision_act = colact_door;
@@ -280,7 +280,7 @@ static void loadroom(tt_room *r, FILE *f)
                 b->xrem          = 0;
                 b->yrem          = 0;
                 b->rem           = 0;
-                b->txrrow        = 7;
+                b->txrrow        = 6;
                 b->txrcol        = id;
                 b->anim          = 4;
                 b->rate          = 100 + (rand() % 50 - 25);

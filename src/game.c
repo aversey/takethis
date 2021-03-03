@@ -292,7 +292,6 @@ static void directly_gulag(tt_body *b)
     gulagmsg = " Communism is Indestructable";
     magic    = tt_gotogulag;
     Mix_PlayMusic(ussr, -1);
-    curmus = ussr;
 }
 
 static void togulag(tt_body *b)
@@ -335,7 +334,7 @@ static void keytake(tt_body *b)
 
 static void doorcol(tt_body *b)
 {
-    if (ttplayer.keys[b->txrrow - 4]) {
+    if (ttplayer.keys[b->txrcol / 8]) {
         int      i;
         tt_room *r    = ttplayer.room;
         tt_body *part = 0;
@@ -353,7 +352,7 @@ static void doorcol(tt_body *b)
         r->walls[b->y / 32][b->x / 32] = 0;
         free(r->walls[part->y / 32][part->x / 32]);
         r->walls[part->y / 32][part->x / 32] = 0;
-        ttplayer.keys[b->txrrow - 4]--;
+        ttplayer.keys[b->txrcol / 8]--;
         b->collision_act    = 0;
         b->txrrow           = 0;
         b->txrcol           = 15;
@@ -402,7 +401,7 @@ static void step(int d)
                 b->msg           = 0;
                 b->msglen        = 0;
                 if (!lenin_until_hadouken) {
-                    b->txrrow = 7;
+                    b->txrrow = 6;
                     b->txrcol = 2 + rand() % 2;
                     b->rate   = 75 + (rand() % 50 - 25);
                     b->yvel   = rand() % 50 - 25;
@@ -412,7 +411,7 @@ static void step(int d)
                     Mix_PlayChannel(-1, tthadouken, 0);
                     lenin_until_hadouken = 3;
                 } else {
-                    b->txrrow = 8;
+                    b->txrrow = 7;
                     b->txrcol = rand() % 4;
                     b->rate   = 150 + (rand() % 50 - 25);
                     b->yvel   = rand() % 100 - 50;
@@ -569,7 +568,7 @@ static void gotofirstroom()
         SDL_Rect d = { 14, 14, 32 * 20, 32 * 16 };
         SDL_RenderFillRect(ttrdr, &d);
         {
-            SDL_Rect src = { 0, 16 * 6, 16, 16 };
+            SDL_Rect src = { 0, 16 * 5, 16, 16 };
             SDL_Rect dst = { 14 + ttplayer.x - delta + rand() % delta,
                              14 + ttplayer.y - delta + rand() % delta,
                              32 + delta / 2 + (rand() % delta),
@@ -646,6 +645,7 @@ static void gotogulag()
             ttplayer.lenin_zhiv = 0;
             ttplayer.x          = 32 * 13;
             ttplayer.y          = 32 * 11;
+            curmus              = ussr;
         }
         tt_player_draw();
         if (delta < 4200)
@@ -967,7 +967,7 @@ void changeroom(int out)
                 dir = 4;
             SDL_Rect s = { 16 * (8 * ttplayer.variant + dir +
                                  (ttplayer.rem / 100 % 2)),
-                           16 * 6, 16, 16 };
+                           16 * 5, 16, 16 };
             SDL_RenderCopy(ttrdr, tttxr, &s, &d);
 
             {
@@ -976,27 +976,30 @@ void changeroom(int out)
                 SDL_SetTextureBlendMode(tttxr, SDL_BLENDMODE_ADD);
                 SDL_SetTextureAlphaMod(tttxr, 64);
                 SDL_SetRenderTarget(ttrdr, lighttxr);
-                SDL_SetRenderDrawColor(ttrdr, 192, 192, 192, 255);
+                if (ttplayer.room == ttmap + 'G')
+                    SDL_SetRenderDrawColor(ttrdr, 96, 96, 96, 255);
+                else
+                    SDL_SetRenderDrawColor(ttrdr, 192, 192, 192, 255);
                 SDL_RenderClear(ttrdr);
                 r = ttplayer.room->neighbours[out];
                 int i;
                 for (i = 0; i != r->bodies_count; ++i) {
                     tt_body *b = r->bodies + i;
-                    if ((7 == b->txrrow && b->txrcol <= 1) ||
+                    if ((6 == b->txrrow && b->txrcol <= 1) ||
                         b->txrrow == 11) {
-                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d   = { b->x + fullx + transx - 32,
                                        b->y + fully + transy - 32, 128, 128 };
                         SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                         SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                    } else if (7 == b->txrrow && b->txrcol >= 1) {
-                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                    } else if (6 == b->txrrow && b->txrcol >= 1) {
+                        SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d   = { b->x + fullx + transx - 32,
                                        b->y + fully + transy - 32, 128, 128 };
                         SDL_SetTextureColorMod(tttxr, 255, 0, 0);
                         SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                    } else if (8 == b->txrrow) {
-                        SDL_Rect src   = { 16 * 14, 16 * 12, 32, 32 };
+                    } else if (7 == b->txrrow) {
+                        SDL_Rect src   = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d     = { b->x + fullx + transx - 32,
                                        b->y + fully + transy - 32, 128, 128 };
                         double   color = (unsigned)b->rem * b->rate % 360000;
@@ -1036,15 +1039,15 @@ void changeroom(int out)
                     for (j = 0; j != TT_ROOM_W; ++j) {
                         tt_body *b = r->walls[i][j];
                         if (!b) continue;
-                        if (9 == b->txrrow) {
-                            SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        if (8 == b->txrrow) {
+                            SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                             SDL_Rect d   = { b->x + fullx + transx - 32,
                                            b->y + fully + transy - 32, 128,
                                            128 };
                             SDL_SetTextureColorMod(tttxr, 255, 215, 0);
                             SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                        } else if (8 == b->txrrow) {
-                            SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        } else if (7 == b->txrrow) {
+                            SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                             SDL_Rect d   = { b->x + fullx + transx - 32,
                                            b->y + fully + transy - 32, 128,
                                            128 };
@@ -1085,21 +1088,21 @@ void changeroom(int out)
                 r = ttplayer.room;
                 for (i = 0; i != r->bodies_count; ++i) {
                     tt_body *b = r->bodies + i;
-                    if ((7 == b->txrrow && b->txrcol <= 1) ||
+                    if ((6 == b->txrrow && b->txrcol <= 1) ||
                         b->txrrow == 11) {
-                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d = { b->x + transx - 32, b->y + transy - 32,
                                        128, 128 };
                         SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                         SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                    } else if (7 == b->txrrow && b->txrcol >= 1) {
-                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                    } else if (6 == b->txrrow && b->txrcol >= 1) {
+                        SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d = { b->x + transx - 32, b->y + transy - 32,
                                        128, 128 };
                         SDL_SetTextureColorMod(tttxr, 255, 0, 0);
                         SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                    } else if (8 == b->txrrow) {
-                        SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                    } else if (7 == b->txrrow) {
+                        SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                         SDL_Rect d = { b->x + transx - 32, b->y + transy - 32,
                                        128, 128 };
                         double   color = (unsigned)b->rem * b->rate % 360000;
@@ -1138,14 +1141,14 @@ void changeroom(int out)
                     for (j = 0; j != TT_ROOM_W; ++j) {
                         tt_body *b = r->walls[i][j];
                         if (!b) continue;
-                        if (9 == b->txrrow) {
-                            SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        if (8 == b->txrrow) {
+                            SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                             SDL_Rect d   = { b->x + transx - 32,
                                            b->y + transy - 32, 128, 128 };
                             SDL_SetTextureColorMod(tttxr, 255, 215, 0);
                             SDL_RenderCopy(ttrdr, tttxr, &src, &d);
-                        } else if (8 == b->txrrow) {
-                            SDL_Rect src = { 16 * 14, 16 * 12, 32, 32 };
+                        } else if (7 == b->txrrow) {
+                            SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
                             SDL_Rect d   = { b->x + transx - 32,
                                            b->y + transy - 32, 128, 128 };
                             double   color =
@@ -1182,6 +1185,24 @@ void changeroom(int out)
                         }
                     }
                 }
+                if (ttplayer.until_gulag > 0) {
+                    double ro = ttplayer.until_gulag / 10;
+                    double f  = (double)(ttplayer.until_gulag) / 3000 * 2 *
+                               3.14159265358979323846;
+                    SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
+                    SDL_Rect d   = { ttplayer.x - 16 + ro * cos(f) - 64,
+                                   ttplayer.y - 32 + ro * sin(f) - 48, 192,
+                                   192 };
+                    SDL_SetTextureColorMod(tttxr, 255, 0, 0);
+                    SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                }
+                if (ttplayer.room == ttmap + 'G') {
+                    SDL_Rect src = { 16 * 14, 16 * 11, 32, 32 };
+                    SDL_Rect d   = { ttplayer.x - 32, ttplayer.y - 21, 128,
+                                   128 };
+                    SDL_SetTextureColorMod(tttxr, 255, 255, 255);
+                    SDL_RenderCopy(ttrdr, tttxr, &src, &d);
+                }
                 SDL_SetTextureColorMod(tttxr, 255, 255, 255);
                 SDL_SetTextureAlphaMod(tttxr, 255);
                 SDL_SetRenderTarget(ttrdr, 0);
@@ -1209,7 +1230,7 @@ void changeroom(int out)
         }
 
         {
-            SDL_Rect src = { 0, 16 * 11, 16, 16 };
+            SDL_Rect src = { 0, 16 * 10, 16, 16 };
             SDL_Rect d   = { 20 + TT_ROOM_W * 32 + 32, 12 + 32, 64, 64 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &d);
             int count  = ttplayer.keys[0];
@@ -1238,7 +1259,7 @@ void changeroom(int out)
             SDL_FreeSurface(s);
         }
         {
-            SDL_Rect src = { 16, 16 * 11, 16, 16 };
+            SDL_Rect src = { 16, 16 * 10, 16, 16 };
             SDL_Rect d   = { 20 + TT_ROOM_W * 32 + 32, 12 + 96, 64, 64 };
             SDL_RenderCopy(ttrdr, tttxr, &src, &d);
             int count  = ttplayer.keys[1];
