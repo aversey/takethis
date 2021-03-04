@@ -62,9 +62,9 @@ $(GAME): $(OBJ)
 $(BUILD)/%.o: $(SRCDIR)/%.c
 	$(COMPILE) $(CFLAGS) -c $< -o $@
 
-# Create build directories, if no such:
+# Create build directory, if no such:
 $(BUILD):
-	mkdir -p $@
+	mkdir $@
 
 # Generate dependency file, adding corresponding build prefixes:
 $(DEPS): $(SRC) $(HEADERS)
