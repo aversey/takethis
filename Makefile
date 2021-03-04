@@ -4,6 +4,8 @@
 DEBUG   ?= no
 # Specify your favourite C compiler here:
 COMPILE ?= gcc
+# Are you on Windows?
+WINDOWS ?= no
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -16,8 +18,11 @@ CFLAGS  += -g -O0
 else
 CFLAGS  += -O2
 endif
+ifeq '$(WINDOWS)' 'yes'
+LFLAGS   = -mwindows -lmingw32
+endif
 # Use SDL:
-LFLAGS   = -lSDL2 -lSDL2_ttf -lSDL2_mixer -lm
+LFLAGS  += -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_mixer -lm
 
 # Directories definitions:
 BUILD    = build
@@ -49,7 +54,7 @@ clean:
 
 # Packing object files into library:
 $(GAME): $(OBJ)
-	$(COMPILE) $(LFLAGS) $^ -o $@
+	$(COMPILE) -o $@ $^ $(LFLAGS)
 
 # Compile object files from corresponding source:
 $(BUILD)/%.o: $(SRCDIR)/%.c
