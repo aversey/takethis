@@ -12,6 +12,7 @@ static int first_gulag          = 1;
 static int fullscreen           = 0;
 static int lenin_grib           = 0;
 static int lenin_until_hadouken = 3;
+static int music_start          = 0;
 
 static int ticks;
 
@@ -81,6 +82,7 @@ static void save()
         fputs("l\n", f);
     else
         fputs("0\n", f);
+    outnum(f, SDL_GetTicks() - music_start);
     fputc(ttplayer.room - ttmap, f);
     fputc('\n', f);
     outnum(f, ttplayer.x);
@@ -197,6 +199,9 @@ static void load()
         Mix_PauseMusic();
     }
     fgetc(f);
+    int music_diff = readnum(f);
+    Mix_SetMusicPosition((double)music_diff / 1000);
+    music_start   = SDL_GetTicks() - music_diff;
     ttplayer.room = ttmap + fgetc(f);
     fgetc(f);
     ttplayer.x             = readnum(f);
@@ -293,6 +298,7 @@ static void directly_gulag(tt_body *b)
     gulagmsg = " Communism is Indestructable";
     magic    = tt_gotogulag;
     Mix_PlayMusic(ussr, -1);
+    music_start = SDL_GetTicks();
 }
 
 static void togulag(tt_body *b)
@@ -312,6 +318,7 @@ static void gribtake(tt_body *b)
 {
     curmus = grib;
     Mix_PlayMusic(grib, -1);
+    music_start      = SDL_GetTicks();
     b->collision_act = 0;
     b->anim          = 1;
     b->txrrow        = 0;
@@ -430,13 +437,15 @@ static void step(int d)
         if (first_gulag) {
             first_gulag = 0;
             Mix_PlayMusic(stalin, -1);
-            curmus = stalin;
+            music_start = SDL_GetTicks();
+            curmus      = stalin;
         }
         ttplayer.until_gulag -= d;
         if (ttplayer.until_gulag <= 0) {
             magic = tt_gotogulag;
             Mix_PlayMusic(ussr, -1);
-            curmus = ussr;
+            music_start = SDL_GetTicks();
+            curmus      = ussr;
         }
     }
     if (xw && yw) {
@@ -759,6 +768,7 @@ static void mausoleum()
     ticks    = newticks;
     newticks = SDL_GetTicks();
     Mix_PlayMusic(lenin, -1);
+    music_start = SDL_GetTicks();
     while (!q && newticks < ticks + 14300) {
         int       delta = newticks - ticks;
         SDL_Event e;
@@ -1369,10 +1379,13 @@ void changeroom(int out)
     magic         = 0;
 }
 
+void music_restart() { music_start = SDL_GetTicks(); }
+
 void tt_mainloop()
 {
     keyw = keya = keys = keyd = arru = arrr = arrd = arrl = 0;
     ticks                                                 = SDL_GetTicks();
+    Mix_HookMusicFinished(music_restart);
     while (!q) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
