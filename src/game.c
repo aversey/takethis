@@ -1197,24 +1197,24 @@ void changeroom(int out)
                     SDL_Color    c = { 255, 255, 255, 255 };
                     SDL_Surface *s =
                         TTF_RenderText_Blended(ttfont, b->msg, c);
-                    SDL_Texture *t   = SDL_CreateTextureFromSurface(ttrdr, s);
-                    SDL_Rect     dst = { 50 + b->x + fullx + transx,
-                                     20 + b->y + fully + transy, s->w, s->h };
+                    SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
+                    SDL_Rect dst   = { 50 + b->x + transx, 20 + b->y + transy,
+                                     s->w, s->h };
                     SDL_RenderCopy(ttrdr, t, 0, &dst);
                     SDL_DestroyTexture(t);
                     SDL_FreeSurface(s);
                 }
             }
-            r = ttplayer.room;
+            r = ttplayer.room->neighbours[out];
             for (i = 0; i != r->bodies_count; ++i) {
                 tt_body *b = r->bodies + i;
                 if (b->msg) {
                     SDL_Color    c = { 255, 255, 255, 255 };
                     SDL_Surface *s =
                         TTF_RenderText_Blended(ttfont, b->msg, c);
-                    SDL_Texture *t = SDL_CreateTextureFromSurface(ttrdr, s);
-                    SDL_Rect dst   = { 50 + b->x + transx, 20 + b->y + transy,
-                                     s->w, s->h };
+                    SDL_Texture *t   = SDL_CreateTextureFromSurface(ttrdr, s);
+                    SDL_Rect     dst = { 50 + b->x + fullx + transx,
+                                     20 + b->y + fully + transy, s->w, s->h };
                     SDL_RenderCopy(ttrdr, t, 0, &dst);
                     SDL_DestroyTexture(t);
                     SDL_FreeSurface(s);
