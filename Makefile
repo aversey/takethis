@@ -50,7 +50,9 @@ clean:
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #     Compilation
+ifneq '$(WINDOWS)' 'yes'
 -include $(DEPS)
+endif
 
 # Packing object files into library:
 $(GAME): $(OBJ)
