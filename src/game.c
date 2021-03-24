@@ -527,7 +527,7 @@ static void gotofirstroom()
     int newticks = SDL_GetTicks();
     SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_BLEND);
     while (!q && newticks < ticks + 800) {
-        int       delta = newticks - ticks;
+        int       delta = newticks - ticks + 1;
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) q = 1;
@@ -603,7 +603,7 @@ static void gotogulag()
     int newticks = SDL_GetTicks();
     SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_BLEND);
     while (!q && newticks < ticks + 5000) {
-        int       delta = newticks - ticks;
+        int       delta = newticks - ticks + 1;
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) q = 1;
@@ -700,7 +700,7 @@ static void mausoleum()
     int newticks = SDL_GetTicks();
     SDL_SetRenderDrawBlendMode(ttrdr, SDL_BLENDMODE_BLEND);
     while (!q && newticks < ticks + 1000) {
-        int       delta = newticks - ticks;
+        int       delta = newticks - ticks + 1;
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) q = 1;
@@ -770,7 +770,7 @@ static void mausoleum()
     Mix_PlayMusic(lenin, -1);
     music_start = SDL_GetTicks();
     while (!q && newticks < ticks + 14300) {
-        int       delta = newticks - ticks;
+        int       delta = newticks - ticks + 1;
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) q = 1;
@@ -831,7 +831,7 @@ void changeroom(int out)
 {
     int newticks = SDL_GetTicks();
     while (!q && newticks < ticks + 500) {
-        int       delta = newticks - ticks;
+        int       delta = newticks - ticks + 1;
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) q = 1;
@@ -1438,7 +1438,7 @@ void tt_mainloop()
         ttplayer.ywalk = (keys | arrd) - (keyw | arru);
         ttplayer.xwalk = (keyd | arrr) - (keya | arrl);
         int newticks   = SDL_GetTicks();
-        step(newticks - ticks);
+        step(newticks - ticks + 1);
         ticks = newticks;
         SDL_RenderClear(ttrdr);
         tt_player_draw();
